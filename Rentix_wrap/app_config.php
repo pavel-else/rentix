@@ -7,5 +7,7 @@
 
     $address_site = "http://rentix.biz";
 
-    $rental_host = "http://app.rentix.biz/#/";
-    //$rental_host = "http://localhost:8080/";
+    // Расположение приложения точки проката
+    //
+    //$rental_host = "https://app.rentix.biz/#/";
+    $rental_host = "http://localhost:8080/"; 
