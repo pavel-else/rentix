@@ -6,6 +6,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: true');
+
 require_once ('./auth.php');
 require_once ('./orders.php');
 require_once ('./subOrders.php');
@@ -16,7 +17,8 @@ require_once ('./accessories.php');
 require_once ('./logs.php');
 require_once ('./options.php');
 require_once ('./categories.php');
-require_once ('./rentalLocations.php');
+require_once ('./rentalPointInfo.php');
+
 class Request    
 {
     use Auth;    
@@ -29,7 +31,8 @@ class Request
     use Logs;    
     use Options;    
     use Categories;
-    use RentalLocations;    
+    use RentalPointInfo;
+
     public $logs = [];
     private $response;
     private $dataJSON;
@@ -37,11 +40,14 @@ class Request
     //private $id_main_org;
     private $pDB;
     private $token;
-    public function __construct($token = null, $queue = null) {
+
+    public function __construct($token = null, $queue = null)
+    {
         $this->token = $token;
         $this->app_id = $this->verifyToken($token);
         $this->queue = $queue;
     }
+    
     private function verifyToken($token)
     {
         $pDB = $this->rent_connect_DB();
@@ -177,10 +183,14 @@ class Request
                 case 'getHeaders':
                     $this->response['headers'] = $this->emu_getallheaders();
                 break;
-                // RebtalLocations
-                case 'getRentalLocations':
-                    $this->response['rental_locations'] = $this->getRentalLoations();
+                // RentalPointInfo
+                case 'getRentalPointInfo':
+                    $this->response['rental_point_info'] = $this->getRentalPointInfo();
                 break;
+                case 'setRentalPointInfo':
+                    $this->setRentalPointInfo($value);
+                break;
+                // else
                 default:
                     $this->writeLog('undefined methods: ' . $cmd . ': ' . $value);
             } 
@@ -296,6 +306,7 @@ class Request
 
 $postDataJSON = file_get_contents('php://input');
 $dataJSON = json_decode($postDataJSON, true);
+
 if ($dataJSON['cmd'] === 'login') {
     $request = new Request();
     $token = $request->login($dataJSON['value']);

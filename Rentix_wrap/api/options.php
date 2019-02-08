@@ -21,9 +21,6 @@ trait Options
     }
 
     private function setOptions($options) {
-        /*
-        * Функция Выбирает Настройки из БД
-        */
         $checkID = function ($name) {
             if (!$name) {
                 return null;
