@@ -3,17 +3,7 @@
     date_default_timezone_set('Europe/Moscow');
 
     
-    define('_DB_HOST', 'localhost');
-
-    // define('_DB_NAME', 'rental2');
-    // define('_DB_USER', 'rental2');
-    // define('_DB_PASS', 'j0K_f3-kN5mO8p_E3');
-
-    define('_DB_NAME', 'rental_test');
-    define('_DB_USER', 'rental');
-    define('_DB_PASS', 'o9Pd_fr-6bSfe5Qm');
-
-    define('_DB_charset', 'UTF8');
+    require_once('../DBSecret.php');
 
     /**
      * Class db
