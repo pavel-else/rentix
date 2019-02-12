@@ -193,24 +193,24 @@ trait SubOrders
 
             $this->writeLog($log);
 
-            $subsql = ' 
-                UPDATE 
-                    `products` 
-                SET 
-                    `status` = :status 
-                WHERE 
-                    `id_rental_org` = :id_rental_org 
-                AND 
-                    `id_rent` = :id_rent
-            ';
+            // $subsql = ' 
+            //     UPDATE 
+            //         `products` 
+            //     SET 
+            //         `status` = :status 
+            //     WHERE 
+            //         `id_rental_org` = :id_rental_org 
+            //     AND 
+            //         `id_rent` = :id_rent
+            // ';
 
-            $subD = array(
-                'id_rent'       => $subOrder[product_id],
-                'id_rental_org' => $this->app_id,
-                'status'        => 'busy'
-            );
+            // $subD = array(
+            //     'id_rent'       => $subOrder[product_id],
+            //     'id_rental_org' => $this->app_id,
+            //     'status'        => 'busy'
+            // );
 
-            $this->pDB->set($subsql, $subD);
+            // $this->pDB->set($subsql, $subD);
 
             return $result;
         };
@@ -564,7 +564,7 @@ trait SubOrders
 
         $setEndTime($subOrder);
         $setBill($subOrder);
-        $setProductStatus($subOrder);
+        // $setProductStatus($subOrder);
         $setOrderStatus($subOrder);
     }
 

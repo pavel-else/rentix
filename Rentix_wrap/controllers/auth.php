@@ -4,7 +4,7 @@
 
     require_once("../app_config.php");
     //Добавляем файл подключения к БД
-    require_once("./connectToDB.php");
+    require_once("../libs/db.php");
     //require_once("./functions/redirect.php");
 
     $pDB = rent_connect_DB();
