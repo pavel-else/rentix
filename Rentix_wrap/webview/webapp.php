@@ -205,7 +205,7 @@ function show_rent($client, $app_id){
 
 /* Функция подключения БД */
 function rent_connect_DB(){
-	include_once('lib.db.php');
+	include_once('../api/lib.db.php');
 
 	$pDB = new Pdo_Db();
 
