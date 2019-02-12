@@ -212,7 +212,7 @@ class Request
     /* Функция подключения БД */
     private function rent_connect_DB()
     {
-        require_once('./lib.db.php');
+        require_once('../libs/db.php');
         $pDB = new Pdo_Db();
         $pDB->connect();
         if (!$pDB->isConnected()){

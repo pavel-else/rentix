@@ -1,10 +1,6 @@
 <?php
-    error_reporting(E_ALL & ~E_NOTICE);
-    date_default_timezone_set('Europe/Moscow');
 
-    
-    require_once('../DBSecret.php');
-
+    require_once ('../DBSecret.php');
     /**
      * Class db
      */
@@ -148,17 +144,15 @@
             return $this->isConnected;
         }
     }
-    
-    function rent_connect_DB() {
-        // require_once('./lib.db.php');
 
-        $pDB = new Pdo_Db();
+        function rent_connect_DB() {
+            $pDB = new Pdo_Db();
 
-        $pDB->connect();
-        
-        if (!$pDB->isConnected()) {
-            echo "Ошибка подключения к БД";
-            die();
+            $pDB->connect();
+            
+            if (!$pDB->isConnected()) {
+                echo "Ошибка подключения к БД";
+                die();
+            }
+            return $pDB;
         }
-        return $pDB;
-    }

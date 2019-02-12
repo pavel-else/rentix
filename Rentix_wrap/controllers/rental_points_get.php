@@ -2,7 +2,7 @@
 
     require_once("../app_config.php");
 
-    require_once("../controllers/connectToDB.php");
+    require_once("../libs/db.php");
 
 
     $pDB = rent_connect_DB();
@@ -20,4 +20,3 @@
     );
 
     $rental_points = $pDB->get($sql, 0, $d);
-?>
