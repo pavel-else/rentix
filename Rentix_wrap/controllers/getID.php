@@ -4,7 +4,7 @@ function getID($tablename, $fieldname = 'id_rent', $f = null)
 {
     $f = $f ? $f : function ($id) { return $id + 1; };
 
-    require_once("./connectToDB.php");
+    require_once("../libs/db.php");
     $pDB = rent_connect_DB();
 
     if (!$tablename) {

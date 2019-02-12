@@ -27,9 +27,12 @@
     $city = htmlspecialchars($_POST["city"], ENT_QUOTES);
     $address = htmlspecialchars($_POST["address"], ENT_QUOTES);
     $phone = htmlspecialchars($_POST["phone"], ENT_QUOTES);
+    $description = htmlspecialchars($_POST["description"], ENT_QUOTES);
+    $description_short = htmlspecialchars($_POST["description_short"], ENT_QUOTES);
+
 
     // Генерация унникального токена
-    $generateUniqToken = function () use (&$generateUniqToken, $isUniq) {
+    $generateUniqToken = function () use (&$generateUniqToken) {
         $token = md5(microtime());
 
         return isUniq($token, 'rental_points', 'token') ? $token : $generateUniqToken();
@@ -45,6 +48,8 @@
         `city`,
         `address`,
         `phone`,
+        `description`,
+        `description_short`,
         `id_rental_org`,
         `token`
     ) VALUES (
@@ -54,6 +59,8 @@
         :city,
         :address,
         :phone,
+        :description,
+        :description_short,
         :id_rental_org,
         :token
     )';
@@ -63,7 +70,9 @@
         'name' => $name,
         'city' => $city,
         'address' => $address,
-        'phone' => $phone, 
+        'phone' => $phone,
+        'description' => $description,
+        'description_short' => $description_short,
         'id_rental_org' => $_SESSION["id_rental_org"],
         'token' => $token   
     );

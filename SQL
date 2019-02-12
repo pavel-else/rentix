@@ -1,0 +1,3 @@
+alter table `rental_points` add `short_description` varchar(255);
+Update `rental_points` set `short_description` = '', `description` = '';
+alter table `rental_points` CHANGE COLUMN `short_description` `description_short` varchar(255);

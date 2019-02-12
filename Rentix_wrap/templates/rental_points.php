@@ -20,10 +20,13 @@
                     </a>
                   </div>
                 </div>
-                <div class="text-value"><?echo $point["name"]?></div>
+                <div class="text-value">
+                <?echo $point["name"]?></div>
                 <div><?echo $point["city"]?></div>
-                <div><?echo $point["address"]?></div>d
+                <div><?echo $point["address"]?></div>
                 <div><?echo $point["phone"]?></div>
+                <div><?echo $point["description"]?></div>
+                <div><?echo $point["description_short"]?></div>
               </div>
               <div class="chart-wrapper mt-3 mx-3" style="height:70px;">
                 <canvas class="chart" id="card-chart1" height="70"></canvas>
@@ -45,8 +48,8 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-sm-12 col-lg-12 hideForm" style="display: none">
+      <div class="row d-flex justify-content-center">
+        <div class="col-sm-6 col-lg-6 hideForm" style="display: none">
           <div class="card text-black bg" style="background: transparent">
             <div class="card-body pb-0">
               <h5 class="card-title">Добавить точку проката</h5>
@@ -58,15 +61,23 @@
                 </div>
                 <div class="form-group">
                   <label for="newPointCity">Город</label>
-                  <input type="text" class="form-control" id="newPointCity" name="city" placeholder="Город">
+                  <input type="text" class="form-control" id="newPointCity" name="city" placeholder="Москва">
                 </div>
                 <div class="form-group">
                   <label for="newPointAddress">Адрес</label>
-                  <input type="text" class="form-control" id="newPointAddress" name="address" placeholder="Адрес">
+                  <input type="text" class="form-control" id="newPointAddress" name="address" placeholder="Строителей, 122">
                 </div>
                 <div class="form-group">
                   <label for="newPointPhone">Телефон</label>
-                  <input type="text" class="form-control" id="newPointPhone" name="phone" placeholder="Телефон">
+                  <input type="text" class="form-control" id="newPointPhone" name="phone" placeholder="8-800-2000-600">
+                </div>
+                <div class="form-group">
+                  <label for="newPointDescriptionShort">Короткое описание</label>
+                  <input type="text" class="form-control" id="newPointDescriptionShort" name="description_short" placeholder="">
+                </div>
+                <div class="form-group">
+                  <label for="newPointDescription">Полное описание</label>
+                  <input type="text" class="form-control" id="newPointDescription" name="description" placeholder="">
                 </div>
                 <button type="submit" name="btn_submit_new_rental_point" value="save" class="btn btn-primary" style="margin-bottom: 20px">Сохранить</button>
               </form>
