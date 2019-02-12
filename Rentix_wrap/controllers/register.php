@@ -5,7 +5,7 @@
     //Добавляем файл подключения к БД
     //require_once("dbconnect.php");
     require_once("../app_config.php");
-    require_once("./connectToDB.php");
+    require_once("../libs/db.php");
     require_once("./getID.php");
 
     $pDB = rent_connect_DB();

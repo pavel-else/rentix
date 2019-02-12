@@ -1,6 +1,6 @@
 <?php 
     function deletePoint($id_rent) {
-        require_once("./connectToDB.php");
+        require_once("../libs/db.php");
 
         // Сессия для id_rental_org
         session_start();

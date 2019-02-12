@@ -2,7 +2,7 @@
 
 function isUniq($value, $tablename, $fieldname = 'id_rent')
 {
-    require_once("./connectToDB.php");
+    require_once("../libs/db.php");
     $pDB = rent_connect_DB();
 
     if (!$tablename) {

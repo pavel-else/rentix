@@ -3,7 +3,7 @@
 
     require_once("../app_config.php");
 
-    require_once("./connectToDB.php");
+    require_once("../libs/db.php");
     require_once("./getID.php");
     require_once("./isUniq.php");
 
