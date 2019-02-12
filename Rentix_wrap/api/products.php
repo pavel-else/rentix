@@ -86,7 +86,8 @@ trait Products
                 `tariff_default`,
                 `color`,
                 `img`, 
-                `type`,  
+                `type`,
+                `size`,  
                 `note`, 
                 `updated`
             ) VALUES (
@@ -100,7 +101,8 @@ trait Products
                 :tariff_default,
                 :color,
                 :img,  
-                :type, 
+                :type,
+                :size, 
                 :note,
                 :updated
             )';
@@ -116,6 +118,7 @@ trait Products
                 'color'         => $product[color],
                 'img'           => $product[img],
                 'type'          => $product[type],
+                'size'          => $product[size],
                 'note'          => $product[note],
                 'updated'       => date("Y-m-d H:i:s", $product[updated]),
             );
@@ -147,6 +150,7 @@ trait Products
                     `color`         = :color,
                     `img`           = :img,
                     `type`          = :type, 
+                    `size`          = :size,
                     `categories`    = :categories,
                     `note`          = :note,
                     `updated`       = :updated 
@@ -166,6 +170,7 @@ trait Products
                 'color'         => $product[color],
                 'img'           => $product[img],
                 'type'          => $product[type],
+                'size'          => $product[size],
                 'categories'    => $product[categories],
                 'note'          => $product[note],
                 'updated'       => date("Y-m-d H:i:s", $product[updated]),
@@ -239,5 +244,3 @@ trait Products
         $this->writeLog($value);
     }
 }
-
-?>
