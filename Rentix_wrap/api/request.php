@@ -136,6 +136,10 @@ class Request
                 case 'deleteProduct':
                     $this->deleteProduct($value);
                 break;
+                case 'incMileage':
+                    $this->incMileage($value);
+                break;
+
                 // Customers
                 case 'getCustomers':
                     $this->response['customers'] = $this->getCustomers();

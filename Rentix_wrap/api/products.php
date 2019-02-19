@@ -46,11 +46,6 @@ trait Products
         };
 
         $newProduct = function($product) {
-            /*
-            * Функция в зависимости от типа тарифа готовит Sql 
-            * и делает запись нового тарифа в БД 
-            */
-            
             $getIdRent = function () {
                 // Запрос БД на максимальный id_rent.
                 // Возвращает увеличенный id_rent или 1 если таблица пуста 
@@ -89,6 +84,7 @@ trait Products
                 `type`,
                 `size`,  
                 `note`, 
+                `mileage`, 
                 `updated`
             ) VALUES (
                 NULL,
@@ -120,6 +116,7 @@ trait Products
                 'type'          => $product[type],
                 'size'          => $product[size],
                 'note'          => $product[note],
+                'mileage'       => 0,
                 'updated'       => date("Y-m-d H:i:s", $product[updated]),
             );
             
@@ -153,6 +150,7 @@ trait Products
                     `size`          = :size,
                     `categories`    = :categories,
                     `note`          = :note,
+                    `mileage`       = :mileage,
                     `updated`       = :updated 
                 WHERE 
                     `id` = :id
@@ -173,6 +171,7 @@ trait Products
                 'size'          => $product[size],
                 'categories'    => $product[categories],
                 'note'          => $product[note],
+                'mileage'       => $product[mileage],
                 'updated'       => date("Y-m-d H:i:s", $product[updated]),
             );
 
@@ -240,7 +239,82 @@ trait Products
         return $result;       
     }
 
-    private function changeImage($value) {
-        $this->writeLog($value);
+    private function incMileage($value) {
+        $mileage = !empty($value['mileage']) ? $value['mileage'] : NULL;
+        $id_rent = !empty($value['product_id']) ? $value['product_id'] : NULL;
+
+        if (!$mileage) {
+            $this->writeLog('incMileage is failed. empty mileage. Mileage =  ' . $mileage);
+            return;
+        }
+        if ($mileage < 0) {
+            $this->writeLog('incMileage is failed. mileage < 0. Mileage =  ' . $mileage);
+            return;
+        }
+        if (!$id_rent) {
+            $this->writeLog('incMileage is failed. empty id_rent. id_rent =  ' . $id_rent);
+            return;
+        }
+
+        $getCurrentMileage = function ($id_rent) {
+            $sql = '
+                SELECT `mileage` 
+                FROM `products` 
+                WHERE `id_rental_org` = :id_rental_org 
+                AND `id_rent` = :id_rent
+            ';
+
+            $d = array (
+                'id_rental_org' => $this->app_id,
+                'id_rent' => $id_rent
+            );
+
+            $result = $this->pDB->get($sql, false, $d);
+            $this->writeLog('currentMileage' . json_encode($result));
+
+            return $result ? $result[0]['mileage'] : false;
+        };
+
+        $update = function ($id_rent, $newMileage) {
+            $sql = '
+                UPDATE `products` 
+                SET 
+                    `mileage`       = :mileage,
+                    `updated`       = :updated 
+                WHERE 
+                    `id_rent` = :id_rent
+                AND 
+                    `id_rental_org` = :id_rental_org
+            ';
+
+            $d = array(
+                'id_rent'       => $id_rent,
+                'id_rental_org' => $this->app_id,
+                'mileage'       => $newMileage,
+                'updated'       => date("Y-m-d H:i:s"),
+            );
+
+            return $this->pDB->set($sql, $d);
+        };
+
+        $currentMileage = $getCurrentMileage($id_rent);
+
+        if (!$currentMileage) {
+            $this->writeLog('don`t getted current mileage');
+            return false;
+        }
+
+        $newMileage = round((float) $currentMileage + (float) $mileage, 2);
+        $result = $update($id_rent, $newMileage);
+
+
+        if ($result) {
+            $this->writeLog("incMileage completed.");
+        } else {
+            $this->writeLog("incMileage failed.");
+            $this->writeLog(json_encode($getCurrentMileage($id_rent)));
+        }
+
+        return $result;         
     }
 }
