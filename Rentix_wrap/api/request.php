@@ -37,7 +37,6 @@ class Request
     private $response;
     private $dataJSON;
     private $app_id;
-    //private $id_main_org;
     private $pDB;
     private $token;
 

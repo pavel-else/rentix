@@ -253,5 +253,3 @@ trait Tariffs
         return $result;
     }  
 }
-
-?>

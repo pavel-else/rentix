@@ -24,17 +24,18 @@ $inputTel = filter_var($_REQUEST['inputTel'], FILTER_SANITIZE_STRING);
 $inputFIO = filter_var($_REQUEST['inputFIO'], FILTER_SANITIZE_STRING);
 $valueTel = filter_var($_REQUEST['valueTel'], FILTER_SANITIZE_STRING);
 
+include_once('../libs/db.php');
 $pDB = rent_connect_DB();
 	
 if($inputTel){
 	/* Поиск по номеру телефона */
 	
 	$inputTel = str_replace(" ","",$inputTel);
-//$inputTel = "+7(918)278-72-26";		// На время тестов завершен
-//$inputTel = "+7(938)539-48-94";		// На время тестов активен
+$inputTel = "+7(989)120-58-77";		// На время тестов завершен
+$inputTel = "+7(989)821-42-02";		// На время тестов активен
 	
 	
-	$sql = 'SELECT * FROM `clients` WHERE `phone` = \''.$inputTel.'\' AND `id_rental_org` = '.$app_id;		// Находим клиента по его номеру телефона
+	$sql = 'SELECT * FROM `customers` WHERE `phone` = \''.$inputTel.'\' AND `id_rental_org` = '.$app_id;		// Находим клиента по его номеру телефона
 	$client = $pDB->get($sql, true, false);	
 	if($client) show_rent($client, $app_id);
 	else {
@@ -64,7 +65,7 @@ else if($inputFIO){
 	$t_inputFIO = str_replace(".", " ", $inputFIO);
 	$t_inputFIO = trim($t_inputFIO);
 	$Arr_inputFIO = explode(" ", $t_inputFIO);
-	$sql = 'SELECT * FROM `clients` WHERE `fname` = \''.$Arr_inputFIO[0].'\' AND `sname` LIKE \''.$Arr_inputFIO[1].'%\' AND `tname` LIKE \''.$Arr_inputFIO[2].'%\' AND `id_rental_org` = '.$app_id;		// Находим клиента по его фамилии и инициалам
+	$sql = 'SELECT * FROM `customers` WHERE `fname` = \''.$Arr_inputFIO[0].'\' AND `sname` LIKE \''.$Arr_inputFIO[1].'%\' AND `tname` LIKE \''.$Arr_inputFIO[2].'%\' AND `id_rental_org` = '.$app_id;		// Находим клиента по его фамилии и инициалам
 	$client = $pDB->get($sql, true, false);	
 	if($client) show_rent($client, $app_id);
 	else echo '<div class="text-danger pb-2">Клиент с фамилией и инициалами <strong>'.$t_inputFIO.'</strong> тоже не найден. Уточните в прокате номер телефона под которым вы регистрировались.</div>';
@@ -87,8 +88,8 @@ else{
 		$style_button_open_close = 'btn-danger';
 	}
 ?>	
-	<script src="js/jquery-3.3.1.slim.min.js"></script>
-	<script src="js/jquery.maskedinput.min.js"></script>
+	<script src="../js/jquery-3.3.1.slim.min.js"></script>
+	<script src="../js/jquery.maskedinput.min.js"></script>
 	
 	<script type="text/javascript">
    jQuery(function($){
@@ -131,6 +132,8 @@ function show_rent($client, $app_id){
 	
 	if($order[id]){
 	
+		include_once('../api/getBill.php');
+	
 		//echo '<p><strong>Сумма: '.$order[bill].' руб.</strong></p>';
 		if($order[bill_no_sale] != $order[bill]) $txt_bill_nosale = '<BR><small class="text-muted">Без учета скидки ('.$client[sale].'%): '.$order[bill_no_sale].' руб.</small>';
 		if($order[status] == 'ACTIVE') $txt_order_status = '<span class="text-success">активен</span>';
@@ -152,18 +155,29 @@ function show_rent($client, $app_id){
 		$time_diff = $interval->format('%hч %iмин');
 		
 		
-		$order_products = json_decode($order[products]);
+		$sql = 'SELECT * FROM `order_products` WHERE `id_rental_org` = '.$app_id.' AND `order_id` ='.$order['order_id'].' ORDER BY id';
+		$pr = $pDB->get($sql, false, true);	
+		foreach ($pr as $prod) { 
+			$sql_p = 'SELECT * FROM `products` WHERE `id_rent` = '.$prod[product_id].' AND `id_rental_org` = '.$app_id;		// Выборка названия товара
+			$products = $pDB->get($sql_p, true, false);
+			if($prod[status] == 'END') $pr_sum = $prod[bill_rent];		
+			else $pr_sum = getBill($app_id, $prod[id_rent]);								// Вычисляем сумму для конкретного товара
+			$output_prod .= '<small>'.$products[name].' - '.$pr_sum.' руб.</small><BR>';
+			$pr_total += $pr_sum;																			// Подсчитываем итоговую сумму
+		}
+		
+		/*$order_products = json_decode($order[products]);
 		for($i=0; $i < count($order_products); ++$i){				// Перебираем все заказы
 			$sql_p = 'SELECT * FROM `products` WHERE `id_rent` = '.$order_products[$i].' AND `id_rental_org` = '.$app_id;		// Выборка названия товара
 			$products = $pDB->get($sql_p, true, false);
 			$output_prod .= '<small>'.$products[name].'</small><BR>';
-		}
+		}*/
 		
 
 		echo '
 		<div class="row">
 			<div class="col-12 col-sm-9 col-md-7 col-lg-5 col-xl-3 mx-auto">
-				<p><strong>Сумма: '.$order[bill].' руб.</strong>
+				<p><strong>Сумма: '.$pr_total.' руб.</strong>
 					'.$txt_bill_nosale.'</p>
 				<div>Статус: '.$txt_order_status.'</div>
 				<div>Длительность: '.$time_diff.'</div>
@@ -204,8 +218,9 @@ function show_rent($client, $app_id){
 
 
 /* Функция подключения БД */
+/*
 function rent_connect_DB(){
-	include_once('../api/lib.db.php');
+	include_once('../libs/db.php');
 
 	$pDB = new Pdo_Db();
 
@@ -216,6 +231,7 @@ function rent_connect_DB(){
 	}
 	return $pDB;
 }
+*/
 
 /* Функция подсчета кол-ва свободных велосипедов */
 function count_free_bike($app_id){
@@ -237,7 +253,7 @@ function count_free_bike($app_id){
 		}
 	}
 
-	$sql = 'SELECT * FROM `products` WHERE `id_rent` NOT IN ('.trim($not_in_rental,',').') AND `active` = 1 AND `id_rental_org` = '.$app_id.' ORDER BY `name`';		// Перебираем все товары кроме занятых
+	$sql = 'SELECT * FROM `products` WHERE `id_rent` NOT IN ('.trim($not_in_rental,',').') AND `status` = \'active\' AND `id_rental_org` = '.$app_id.' ORDER BY `name`';		// Перебираем все товары кроме занятых
 	$p = $pDB->get($sql, false, true);	
 	foreach ($p as $products) { 
 		//$output_free_prod .= $products[name].'<BR>';

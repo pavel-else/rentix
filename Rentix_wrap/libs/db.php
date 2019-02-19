@@ -145,14 +145,14 @@
         }
     }
 
-        function rent_connect_DB() {
-            $pDB = new Pdo_Db();
+    function rent_connect_DB() {
+        $pDB = new Pdo_Db();
 
-            $pDB->connect();
-            
-            if (!$pDB->isConnected()) {
-                echo "Ошибка подключения к БД";
-                die();
-            }
-            return $pDB;
+        $pDB->connect();
+        
+        if (!$pDB->isConnected()) {
+            echo "Ошибка подключения к БД";
+            die();
         }
+        return $pDB;
+    }
