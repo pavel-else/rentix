@@ -1,31 +1,28 @@
 <?php
 
-trait Products
+trait Repairs
 {
-    private function getProducts() {
+    private function getRepairs() {
         $sql = '
             SELECT * 
-            FROM `products` 
+            FROM `repairs` 
             WHERE `id_rental_org` = :id_rental_org 
-            AND NOT `status`      = :status 
-            ORDER BY `name`
         ';
 
         $d = array (
             'id_rental_org' => $this->app_id,
-            'status'        => 'deleted'
         );
 
         $result = $this->pDB->get($sql, false, $d);
         
-        $log = $result ? "getProducts completed" : "getProducts failed";
+        $log = $result ? "getRepairs is completed" : "getRepairs is failed";
 
         $this->writeLog($log);
 
         return $result;
     }
     
-    private function setProduct($product) {
+    private function setRepairs($repairs) {
 
         $checkID = function ($id_rent) {
             $sql = '
@@ -192,7 +189,7 @@ trait Products
         return $id ? $update($id, $product) : $newProduct($product);       
     }
 
-    private function deleteProduct($id_rent) {
+    private function deleteRepairs($id_rent) {
 
         $search = function ($id_rent) {
             $sql = '
@@ -238,84 +235,5 @@ trait Products
         }
 
         return $result;       
-    }
-
-    private function incMileage($value) {
-        $mileage = !empty($value['mileage']) ? $value['mileage'] : NULL;
-        $id_rent = !empty($value['product_id']) ? $value['product_id'] : NULL;
-
-        if (!$mileage) {
-            $this->writeLog('incMileage is failed. empty mileage. Mileage =  ' . $mileage);
-            return;
-        }
-        if ($mileage < 0) {
-            $this->writeLog('incMileage is failed. mileage < 0. Mileage =  ' . $mileage);
-            return;
-        }
-        if (!$id_rent) {
-            $this->writeLog('incMileage is failed. empty id_rent. id_rent =  ' . $id_rent);
-            return;
-        }
-
-        $getCurrentMileage = function ($id_rent) {
-            $sql = '
-                SELECT `mileage` 
-                FROM `products` 
-                WHERE `id_rental_org` = :id_rental_org 
-                AND `id_rent` = :id_rent
-            ';
-
-            $d = array (
-                'id_rental_org' => $this->app_id,
-                'id_rent' => $id_rent
-            );
-
-            $result = $this->pDB->get($sql, false, $d);
-            $this->writeLog('currentMileage' . json_encode($result));
-
-            return $result ? $result[0]['mileage'] : false;
-        };
-
-        $update = function ($id_rent, $newMileage) {
-            $sql = '
-                UPDATE `products` 
-                SET 
-                    `mileage`       = :mileage,
-                    `updated`       = :updated 
-                WHERE 
-                    `id_rent` = :id_rent
-                AND 
-                    `id_rental_org` = :id_rental_org
-            ';
-
-            $d = array(
-                'id_rent'       => $id_rent,
-                'id_rental_org' => $this->app_id,
-                'mileage'       => $newMileage,
-                'updated'       => date("Y-m-d H:i:s"),
-            );
-
-            return $this->pDB->set($sql, $d);
-        };
-
-        $currentMileage = $getCurrentMileage($id_rent);
-
-        if (!$currentMileage) {
-            $this->writeLog('don`t getted current mileage');
-            return false;
-        }
-
-        $newMileage = round((float) $currentMileage + (float) $mileage, 2);
-        $result = $update($id_rent, $newMileage);
-
-
-        if ($result) {
-            $this->writeLog("incMileage completed.");
-        } else {
-            $this->writeLog("incMileage failed.");
-            $this->writeLog(json_encode($getCurrentMileage($id_rent)));
-        }
-
-        return $result;         
     }
 }

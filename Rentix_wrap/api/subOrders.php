@@ -136,7 +136,7 @@ trait SubOrders
                 `id_rental_org`, 
                 `product_id`,
                 `tariff_id`,
-                `bill`,
+                -- `bill`,
                 `bill_rent`, 
                 `bill_access`, 
                 `accessories`,
@@ -154,7 +154,7 @@ trait SubOrders
                 :id_rental_org, 
                 :product_id,
                 :tariff_id,
-                :bill,
+                -- :bill,
                 :bill_rent,
                 :bill_access, 
                 :accessories, 
@@ -174,7 +174,7 @@ trait SubOrders
                 'product_id'    => $subOrder[product_id],
                 'tariff_id'     => $subOrder[tariff_id],
                 'accessories'   => $subOrder[accessories],
-                'bill'          => $subOrder[bill],
+                // 'bill'          => $subOrder[bill],
                 'bill_rent'     => $subOrder[bill_rent],
                 'bill_access'   => $subOrder[bill_access],
                 'sale'          => $subOrder[sale],
@@ -192,25 +192,6 @@ trait SubOrders
             $log = $result ? 'addSubOrder complete' : 'addSubOrder failed';
 
             $this->writeLog($log);
-
-            // $subsql = ' 
-            //     UPDATE 
-            //         `products` 
-            //     SET 
-            //         `status` = :status 
-            //     WHERE 
-            //         `id_rental_org` = :id_rental_org 
-            //     AND 
-            //         `id_rent` = :id_rent
-            // ';
-
-            // $subD = array(
-            //     'id_rent'       => $subOrder[product_id],
-            //     'id_rental_org' => $this->app_id,
-            //     'status'        => 'busy'
-            // );
-
-            // $this->pDB->set($subsql, $subD);
 
             return $result;
         };
@@ -285,7 +266,7 @@ trait SubOrders
                     `product_id`    = :product_id,
                     `tariff_id`     = :tariff_id,
                     `accessories`   = :accessories, 
-                    `bill`          = :bill,
+                    -- `bill`          = :bill,
                     `bill_rent`     = :bill_rent,
                     `bill_access`   = :bill_access,
                     `sale`          = :sale,
@@ -308,7 +289,7 @@ trait SubOrders
                 'product_id'    => $subOrder[product_id],
                 'tariff_id'     => $subOrder[tariff_id],
                 'accessories'   => $subOrder[accessories],
-                'bill'          => $subOrder[bill],
+                // 'bill'          => $subOrder[bill],
                 'bill_rent'     => $subOrder[bill_rent],
                 'bill_access'   => $subOrder[bill_access],
                 'sale'          => $subOrder[sale],
@@ -438,7 +419,7 @@ trait SubOrders
                 UPDATE 
                     `order_products` 
                 SET 
-                    `bill`        = :bill, 
+                    -- `bill`        = :bill, 
                     `bill_rent`   = :bill_rent, 
                     `bill_access` = :bill_access, 
                     `sale`        = :sale, 
@@ -450,7 +431,7 @@ trait SubOrders
             ;
 
             $d = array(
-                'bill'        => $subOrder[bill],
+                // 'bill'        => $subOrder[bill],
                 'bill_rent'   => $subOrder[bill_rent],
                 'bill_access' => $subOrder[bill_access],
                 'sale'        => $subOrder[sale],

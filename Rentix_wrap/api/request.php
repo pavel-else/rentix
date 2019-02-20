@@ -18,6 +18,7 @@ require_once ('./logs.php');
 require_once ('./options.php');
 require_once ('./categories.php');
 require_once ('./rentalPointInfo.php');
+require_once ('./repairs.php');
 
 class Request    
 {
@@ -32,6 +33,7 @@ class Request
     use Options;    
     use Categories;
     use RentalPointInfo;
+    use Repairs;
 
     public $logs = [];
     private $response;
@@ -161,10 +163,12 @@ class Request
                 case 'deleteTariff':
                     $this->deleteTariff($value);
                 break;
+
                 // Categories
                 case 'getCategories':
                     $this->response['categories'] = $this->getCategories();
                 break;
+
                 // Accessories
                 case 'getAccessories':
                     $this->response['accessories'] = $this->getAccessories();
@@ -172,6 +176,7 @@ class Request
                 case 'setAccessory':
                     $this->setAccessory($value);
                 break;
+
                 // Options
                 case 'getOptions':
                     $this->response['options'] = $this->getOptions();
@@ -179,6 +184,7 @@ class Request
                 case 'setOptions':
                     $this->setOptions($value);
                 break;
+
                 // Logs
                 case 'getLogs':
                     $this->response['logs'] = $this->logs;
@@ -186,6 +192,7 @@ class Request
                 case 'getHeaders':
                     $this->response['headers'] = $this->emu_getallheaders();
                 break;
+
                 // RentalPointInfo
                 case 'getRentalPointInfo':
                     $this->response['rental_point_info'] = $this->getRentalPointInfo();
@@ -193,6 +200,12 @@ class Request
                 case 'setRentalPointInfo':
                     $this->setRentalPointInfo($value);
                 break;
+
+                // Repairs
+                case 'getRepairs':
+                    $this->response['repairs'] = $this->getRepairs();
+                break;
+
                 // else
                 default:
                     $this->writeLog('undefined methods: ' . $cmd . ': ' . $value);
