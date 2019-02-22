@@ -205,6 +205,9 @@ class Request
                 case 'getRepairs':
                     $this->response['repairs'] = $this->getRepairs();
                 break;
+                case 'setRepair':
+                    $this->setRepair($value);
+                break;
 
                 // else
                 default:
@@ -238,7 +241,7 @@ class Request
         return $pDB;
     }
     /* Общая функция поиска id_rent в указанной таблице*/
-    private function find($tableName, $id_rent)
+    private function findIdRentIn($tableName, $id_rent)
     {
         $sql = "
             SELECT `id` 
@@ -253,6 +256,30 @@ class Request
         $result = $this->pDB->get($sql, 0, $d);
         return $result[0][id];   
     }
+
+    private function getIdRentIn($tableName)
+    {
+
+        // Запрос БД на максимальный id_rent.
+        // Возвращает увеличенный id_rent или 1 если  ничего не найдено
+
+        $sql = "
+            SELECT `id_rent` 
+            FROM $tableName 
+            WHERE `id_rental_org` = :id_rental_org 
+            ORDER BY `id_rent`
+            DESC LIMIT 1
+        ";
+
+        $d = array(
+            'id_rental_org' => $this->app_id
+        );
+
+        $result = $this->pDB->get($sql, 0, $d);
+
+        return $result ? ++$result[0][id_rent] : 1;    
+    }
+
     private function importCustomers()
     {
         // 1. Выбрать склиентов

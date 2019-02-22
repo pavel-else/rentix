@@ -118,7 +118,7 @@ trait Products
                 'size'          => $product[size],
                 'note'          => $product[note],
                 'mileage'       => '0',
-                'updated'       => date("Y-m-d H:i:s", $product[updated]),
+                'updated'       => date("Y-m-d H:i:s"),
             );
             
             $result = $this->pDB->set($sql, $d);
@@ -173,7 +173,7 @@ trait Products
                 'categories'    => $product[categories],
                 'note'          => $product[note],
                 'mileage'       => $product[mileage],
-                'updated'       => date("Y-m-d H:i:s", $product[updated]),
+                'updated'       => date("Y-m-d H:i:s"),
             );
 
             $result = $this->pDB->set($sql, $d);

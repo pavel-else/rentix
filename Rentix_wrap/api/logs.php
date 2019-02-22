@@ -2,8 +2,8 @@
 
 trait Logs
 {
-    private function writeLog($log) {
-        $this->logs[] = $log;
+    private function writeLog(...$logs) {
+        $this->logs[] = implode(' ', $logs);
     }
 
     private function getLogs() {
