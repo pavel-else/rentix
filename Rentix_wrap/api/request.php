@@ -208,6 +208,9 @@ class Request
                 case 'setRepair':
                     $this->setRepair($value);
                 break;
+                case 'stopRepair':
+                    $this->stopRepair($value);
+                break;
 
                 // else
                 default:
