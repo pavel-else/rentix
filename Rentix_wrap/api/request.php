@@ -176,6 +176,9 @@ class Request
                 case 'setAccessory':
                     $this->setAccessory($value);
                 break;
+                case 'deleteAccessory':
+                    $this->deleteAccessory($value);
+                break;
 
                 // Options
                 case 'getOptions':
