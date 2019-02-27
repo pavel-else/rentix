@@ -36,7 +36,7 @@ trait Repairs
             $this->writeLog('Repairs: id_rent is found. Make update this repair', 'id_rent = ', $id);
         }
 
-        return $id ? $this->updateRepair($repair) :$this->newRepair($repair);       
+        return $id ? $this->updateRepair($repair) : $this->newRepair($repair);       
     }
 
     private function newRepair($repair)

@@ -29,54 +29,26 @@ trait Accessoriess
     }
 
     private function setAccessory($accessory) {
-        /*
-        * Проверяем, существует ли accessory с указанным id.
-        * Если да - обновляем данные.
-        * Если нет - записываем нового accessory
-        */
-
-        $checkID = function ($id) {
-            if (!$id) {
-                return null;
-            }
-
-            $sql = '
-                SELECT `id` 
-                FROM `accessories` 
-                WHERE `id_rent` = :id_rent
-            ';
-
-            $d = array(
-                'id_rent' => $id
-            );
-            
-            $result = $this->pDB->get($sql, false, $d);
-            return $result[0][id];
-        };
-
-        $update = function ($id, $accessory) {
-            
+        $update = function ($accessory) {            
             $sql = '
                 UPDATE 
                     `accessories` 
                 SET 
-                    `id_rent` = :id_rent, 
                     `name`    = :name, 
                     `type`    = :type, 
                     `value`   = :value 
                 WHERE 
-                    `id` = :id 
+                    `id_rent` = :id_rent
                 AND 
                     `id_rental_org` = :id_rental_org
             ';
 
             $d = array(
-                'id'            => $id,
                 'id_rental_org' => $this->app_id,
-                'id_rent'       => $accessory[id_rent],
-                'name'          => $accessory[name],
-                'type'          => $accessory[type],
-                'value'         => $accessory[value]
+                'id_rent'       => $accessory['id_rent'],
+                'name'          => $accessory['name'],
+                'type'          => $accessory['type'],
+                'value'         => $accessory['value']
             );
 
             $result = $this->pDB->set($sql, $d);
@@ -88,26 +60,7 @@ trait Accessoriess
             return $result;
         };
 
-        $setAccessory = function ($accessory) {
-            
-            $getIncMaxID = function () {
-                $sql = '
-                    SELECT `id_rent` 
-                    FROM `accessories` 
-                    WHERE `id_rental_org` = :id_rental_org 
-                    ORDER BY `id_rent`
-                    DESC LIMIT 1
-                ';
-
-                $d = array(
-                    'id_rental_org' => $this->app_id
-                );
-
-                $result = $this->pDB->get($sql, false, $d);
-
-                return ++$result[0][id_rent];
-            };
-
+        $newAccessory = function ($accessory) {
             $sql = 'INSERT INTO `accessories` (
                 `id`,
                 `id_rent`,
@@ -126,12 +79,11 @@ trait Accessoriess
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'id_rent'       => $accessory[id_rent] ? $accessory[id_rent] : $getIncMaxID(),
-                'name'          => $accessory[name],
-                'type'          => $accessory[type],
-                'value'         => $accessory[value]
+                'id_rent'       => $this->getIdRentIn('accessories'),
+                'name'          => $accessory['name'],
+                'type'          => $accessory['type'],
+                'value'         => $accessory['value']
             );
-
 
             $result = $this->pDB->set($sql, $d);
 
@@ -142,10 +94,37 @@ trait Accessoriess
             return $result;
         };
 
-        $id = $checkID($accessory[id_rent]);
+        $id = $this->findIdRentIn('accessories', $accessory['id_rent']);
 
-        return $id ? $update($id, $accessory) : $setAccessory($accessory);
-    }  
+        if (!$id) {
+            $this->writeLog('Accessory: id_rent is not found. Make new Accessory', 'id_rent = ', $accessory['id_rent']);
+        } else {
+            $this->writeLog('Accessory: id_rent is found. Make update this accessory');
+        }
+
+        return $id ? $update($accessory) : $newAccessory($accessory);
+    }
+
+    private function deleteAccessory($id_rent)
+    {
+        $sql = '
+            DELETE 
+            FROM `accessories` 
+            WHERE `id_rent` = :id_rent
+            AND `id_rental_org` = :id_rental_org
+        ';
+
+        $d = array(
+            'id_rent' => $id_rent,
+            'id_rental_org' => $this->app_id
+        );
+
+        $result = $this->pDB->set($sql, $d);
+
+        if ($result) {
+            $this->writeLog("function Delete successfully completed. Accessory id_rent($id_rental) was deleted");
+        } else {
+            $this->writeLog("function Delete failed. Accessory id_rent($id_rent) was not deleted");
+        }
+    } 
 }
-
-?>
