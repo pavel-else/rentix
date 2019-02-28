@@ -18,6 +18,7 @@ require_once ('./logs.php');
 require_once ('./options.php');
 require_once ('./categories.php');
 require_once ('./rentalPointInfo.php');
+require_once ('./generalSettings.php');
 require_once ('./repairs.php');
 
 class Request    
@@ -33,6 +34,7 @@ class Request
     use Options;    
     use Categories;
     use RentalPointInfo;
+    use GeneralSettings;
     use Repairs;
 
     public $logs = [];
@@ -82,10 +84,12 @@ class Request
                 case 'importCustomers':
                     $this->importCustomers();
                 break;
+
                 // Auth
                 case 'login':
                     $this->response['success']['token'] = $this->login($value);
                 break;
+
                 // Orders
                 case 'getOrders':
                     $this->response['orders'] = $this->getOrders();
@@ -102,6 +106,7 @@ class Request
                 case 'splitOrder':
                     $this->splitOrder($value);
                 break;
+
                 // SubOrders
                 case 'getSubOrders':
                     $this->response['sub_orders'] = $this->getSubOrders();
@@ -202,6 +207,14 @@ class Request
                 break;
                 case 'setRentalPointInfo':
                     $this->setRentalPointInfo($value);
+                break;
+
+                // GeneralSettings
+                case 'getGeneralSettings':
+                    $this->response['general_settings'] = $this->getGeneralSettings();
+                break;
+                case 'setGeneralSettings':
+                    $this->setGeneralSettings($value);
                 break;
 
                 // Repairs
