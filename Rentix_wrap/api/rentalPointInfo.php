@@ -20,7 +20,7 @@ trait RentalPointInfo
 
         $this->writeLog($log);
 
-        return $result;
+        return $result[0];
     }
 
     private function setRentalPointInfo($point)
