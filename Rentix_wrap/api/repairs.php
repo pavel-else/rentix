@@ -2,7 +2,8 @@
 
 trait Repairs
 {
-    private function getRepairs() {
+    private function getRepairs()
+    {
         $sql = '
             SELECT * 
             FROM `repairs` 
@@ -16,8 +17,6 @@ trait Repairs
         $result = $this->pDB->get($sql, false, $d);
         
         $log = $result ? "getRepairs is completed" : "getRepairs is failed";
-
-        $this->writeLog($log);
 
         return $result;
     }
@@ -47,10 +46,9 @@ trait Repairs
             `id_rent`,
             `id_rental_org`,
             `product_id`, 
-            `is_plan`, 
             `start_time`, 
             `mileage`, 
-            `types_fix`, 
+            `repair_type`, 
             `cost_comp`, 
             `cost_repair`, 
             `note`, 
@@ -61,10 +59,9 @@ trait Repairs
             :id_rent,
             :id_rental_org,
             :product_id, 
-            :is_plan, 
             :start_time, 
             :mileage, 
-            :types_fix, 
+            :repair_type, 
             :cost_comp, 
             :cost_repair, 
             :note, 
@@ -76,10 +73,10 @@ trait Repairs
             'id_rent' => $this->getIdRentIn('repairs'),
             'id_rental_org' => $this->app_id,
             'product_id' => $repair['product_id'], 
-            'is_plan' => $repair['is_plan'], 
             'start_time' => $repair['start_time'], 
-            'mileage' => $repair['mileage'], 
-            'types_fix' => $repair['types_fix'], 
+            // 'mileage' => $repair['mileage'], 
+            'mileage' => 0, 
+            'repair_type' => $repair['repair_type'], 
             'cost_comp' => $repair['cost_comp'], 
             'cost_repair' => $repair['cost_repair'], 
             'note' => $repair['note'], 
@@ -111,10 +108,9 @@ trait Repairs
             UPDATE `repairs` 
             SET 
                 `product_id` = :product_id,
-                `is_plan` = :is_plan, 
                 `start_time` = :start_time, 
                 `mileage` = :mileage, 
-                `types_fix` = :types_fix, 
+                `repair_type` = :repair_type, 
                 `cost_comp` = :cost_comp, 
                 `cost_repair` = :cost_repair, 
                 `note` = :note, 
@@ -130,10 +126,9 @@ trait Repairs
             'id_rent' => $repair['id_rent'],
             'id_rental_org' => $this->app_id,
             'product_id' => $repair['product_id'], 
-            'is_plan' => $repair['is_plan'], 
             'start_time' => $repair['start_time'], 
             'mileage' => $repair['mileage'], 
-            'types_fix' => $repair['types_fix'], 
+            'repair_type' => $repair['repair_type'], 
             'cost_comp' => $repair['cost_comp'], 
             'cost_repair' => $repair['cost_repair'], 
             'note' => $repair['note'], 
@@ -153,12 +148,6 @@ trait Repairs
     }
 
     private function stopRepair($repair) {
-        $stop = $repair['end_time_timestamp'];
-        $end_time = date('Y-m-d H:i:s', $stop / 1000);
-        $repair['end_time'] = $end_time;
-
-        //$this->writeLog('stop', date('Y-m-d H:i:s', $stop / 1000));
-
         $isUpdatedRepair = $this->updateRepair($repair);
 
         if ($isUpdatedRepair) {

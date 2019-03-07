@@ -20,6 +20,7 @@ require_once ('./categories.php');
 require_once ('./rentalPointInfo.php');
 require_once ('./generalSettings.php');
 require_once ('./repairs.php');
+require_once ('./repairTypes.php');
 
 class Request    
 {
@@ -36,6 +37,7 @@ class Request
     use RentalPointInfo;
     use GeneralSettings;
     use Repairs;
+    use RepairTypes;
 
     public $logs = [];
     private $response;
@@ -226,6 +228,11 @@ class Request
                 break;
                 case 'stopRepair':
                     $this->stopRepair($value);
+                break;
+
+                // RepairTypes
+                case 'getRepairTypes' :
+                    $this->response['repair_types'] = $this->getRepairTypes();
                 break;
 
                 // else

@@ -85,7 +85,9 @@ trait Products
                 `size`,  
                 `note`, 
                 `mileage`, 
-                `updated`
+                `updated`,
+                `created`,
+                `last_repair`
             ) VALUES (
                 NULL,
                 :id_rent,
@@ -101,7 +103,9 @@ trait Products
                 :size, 
                 :note,
                 :mileage, 
-                :updated
+                :updated,
+                :created,
+                :last_repair
             )';
 
             $d = array(
@@ -117,8 +121,10 @@ trait Products
                 'type'          => $product[type],
                 'size'          => $product[size],
                 'note'          => $product[note],
-                'mileage'       => '0',
+                'mileage'       => '0.0',
                 'updated'       => date("Y-m-d H:i:s"),
+                'created'       => date("Y-m-d H:i:s"),
+                'last_repair'   => date("Y-m-d H:i:s")
             );
             
             $result = $this->pDB->set($sql, $d);
@@ -138,7 +144,6 @@ trait Products
             $sql = '
                 UPDATE `products` 
                 SET 
-                    `id_rent`       = :id_rent,
                     `id_rental_org` = :id_rental_org,
                     `name`          = :name,
                     `cost`          = :cost,
@@ -152,28 +157,29 @@ trait Products
                     `categories`    = :categories,
                     `note`          = :note,
                     `mileage`       = :mileage,
-                    `updated`       = :updated 
+                    `updated`       = :updated,
+                    `last_repair`   = :last_repair
                 WHERE 
                     `id` = :id
             ';
 
             $d = array(
                 'id'            => $id,
-                'id_rent'       => $product[id_rent],
                 'id_rental_org' => $this->app_id,
-                'name'          => $product[name],
-                'cost'          => $product[cost],
-                'status'        => $product[status],
-                'tariff_ids'    => $product[tariff_ids],
-                'tariff_default'=> $product[tariff_default],
-                'color'         => $product[color],
-                'img'           => $product[img],
-                'type'          => $product[type],
-                'size'          => $product[size],
-                'categories'    => $product[categories],
-                'note'          => $product[note],
-                'mileage'       => $product[mileage],
+                'name'          => $product['name'],
+                'cost'          => $product['cost'],
+                'status'        => $product['status'],
+                'tariff_ids'    => $product['tariff_ids'],
+                'tariff_default'=> $product['tariff_default'],
+                'color'         => $product['color'],
+                'img'           => $product['img'],
+                'type'          => $product['type'],
+                'size'          => $product['size'],
+                'categories'    => $product['categories'],
+                'note'          => $product['note'],
+                'mileage'       => $product['mileage'],
                 'updated'       => date("Y-m-d H:i:s"),
+                'last_repair'   => $product['last_repair']
             );
 
             $result = $this->pDB->set($sql, $d);
