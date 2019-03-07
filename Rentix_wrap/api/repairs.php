@@ -50,7 +50,7 @@ trait Repairs
             `mileage`, 
             `repair_type`, 
             `cost_comp`, 
-            `cost_repair`, 
+            `cost_work`, 
             `note`, 
             `end_time`, 
             `updated` 
@@ -63,7 +63,7 @@ trait Repairs
             :mileage, 
             :repair_type, 
             :cost_comp, 
-            :cost_repair, 
+            :cost_work, 
             :note, 
             :end_time, 
             :updated
@@ -74,11 +74,10 @@ trait Repairs
             'id_rental_org' => $this->app_id,
             'product_id' => $repair['product_id'], 
             'start_time' => $repair['start_time'], 
-            // 'mileage' => $repair['mileage'], 
             'mileage' => 0, 
             'repair_type' => $repair['repair_type'], 
             'cost_comp' => $repair['cost_comp'], 
-            'cost_repair' => $repair['cost_repair'], 
+            'cost_work' => $repair['cost_work'], 
             'note' => $repair['note'], 
             'end_time' => $repair['end_time'],
             'updated' => date("Y-m-d H:i:s"),
@@ -112,7 +111,7 @@ trait Repairs
                 `mileage` = :mileage, 
                 `repair_type` = :repair_type, 
                 `cost_comp` = :cost_comp, 
-                `cost_repair` = :cost_repair, 
+                `cost_work` = :cost_work, 
                 `note` = :note, 
                 `end_time` = :end_time, 
                 `updated` = :updated 
@@ -130,7 +129,7 @@ trait Repairs
             'mileage' => $repair['mileage'], 
             'repair_type' => $repair['repair_type'], 
             'cost_comp' => $repair['cost_comp'], 
-            'cost_repair' => $repair['cost_repair'], 
+            'cost_work' => $repair['cost_work'], 
             'note' => $repair['note'], 
             'end_time' => $repair['end_time'], 
             'updated' => date("Y-m-d H:i:s")

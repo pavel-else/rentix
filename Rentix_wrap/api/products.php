@@ -86,8 +86,7 @@ trait Products
                 `note`, 
                 `mileage`, 
                 `updated`,
-                `created`,
-                `last_repair`
+                `created`
             ) VALUES (
                 NULL,
                 :id_rent,
@@ -104,8 +103,7 @@ trait Products
                 :note,
                 :mileage, 
                 :updated,
-                :created,
-                :last_repair
+                :created
             )';
 
             $d = array(
@@ -123,8 +121,7 @@ trait Products
                 'note'          => $product[note],
                 'mileage'       => '0.0',
                 'updated'       => date("Y-m-d H:i:s"),
-                'created'       => date("Y-m-d H:i:s"),
-                'last_repair'   => date("Y-m-d H:i:s")
+                'created'       => date("Y-m-d H:i:s")
             );
             
             $result = $this->pDB->set($sql, $d);
@@ -157,8 +154,7 @@ trait Products
                     `categories`    = :categories,
                     `note`          = :note,
                     `mileage`       = :mileage,
-                    `updated`       = :updated,
-                    `last_repair`   = :last_repair
+                    `updated`       = :updated
                 WHERE 
                     `id` = :id
             ';
@@ -178,8 +174,7 @@ trait Products
                 'categories'    => $product['categories'],
                 'note'          => $product['note'],
                 'mileage'       => $product['mileage'],
-                'updated'       => date("Y-m-d H:i:s"),
-                'last_repair'   => $product['last_repair']
+                'updated'       => date("Y-m-d H:i:s")
             );
 
             $result = $this->pDB->set($sql, $d);
