@@ -179,10 +179,10 @@ trait Orders
         }
 
         $cheack = function ($order_id) {
-            //Вернет true если в ордере есть активные товары или false иначе
+            //Вернет true если в ордере есть активные сабордеры или false иначе
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `order_id` = :order_id
                 AND `status`   = :status
@@ -271,5 +271,3 @@ trait Orders
 
     // stopOrder in SubOrders
 }
-
-?>

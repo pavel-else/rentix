@@ -5,7 +5,7 @@ trait SubOrders
     private function getSubOrders() {
         $sql = '
             SELECT * 
-            FROM `order_products` 
+            FROM `sub_orders` 
             WHERE `id_rental_org` = :id_rental_org
         ';
 
@@ -27,7 +27,7 @@ trait SubOrders
         $getOrderProducts = function ($order_id) {
             $sql = '
                 SELECT * 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `order_id`    = :order_id 
                 AND `id_rental_org` = :id_rental_org
             ';
@@ -82,7 +82,7 @@ trait SubOrders
                 // если есть такая запись, где `end_time` IS NULL, то продукт занят, вернуть false
                 $sql = '
                     SELECT `id` 
-                    FROM `order_products` 
+                    FROM `sub_orders` 
                     WHERE `id_rental_org` = :id_rental_org 
                     AND `status`          = :status
                 ';
@@ -129,14 +129,13 @@ trait SubOrders
 
         $set = function ($subOrder) {
 
-            $sql = 'INSERT INTO `order_products` (
+            $sql = 'INSERT INTO `sub_orders` (
                 `id`, 
                 `id_rent`, 
                 `order_id`, 
                 `id_rental_org`, 
                 `product_id`,
                 `tariff_id`,
-                -- `bill`,
                 `bill_rent`, 
                 `bill_access`, 
                 `accessories`,
@@ -154,7 +153,6 @@ trait SubOrders
                 :id_rental_org, 
                 :product_id,
                 :tariff_id,
-                -- :bill,
                 :bill_rent,
                 :bill_access, 
                 :accessories, 
@@ -174,7 +172,6 @@ trait SubOrders
                 'product_id'    => $subOrder[product_id],
                 'tariff_id'     => $subOrder[tariff_id],
                 'accessories'   => $subOrder[accessories],
-                // 'bill'          => $subOrder[bill],
                 'bill_rent'     => $subOrder[bill_rent],
                 'bill_access'   => $subOrder[bill_access],
                 'sale'          => $subOrder[sale],
@@ -240,7 +237,7 @@ trait SubOrders
         $search = function ($order_id, $product_id) {
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `order_id`        = :order_id 
                 AND `product_id`      = :product_id 
@@ -260,13 +257,12 @@ trait SubOrders
         $update = function ($id, $subOrder) {
 
             $sql = '
-                UPDATE `order_products` 
+                UPDATE `sub_orders` 
                 SET  
                     `order_id`      = :order_id, 
                     `product_id`    = :product_id,
                     `tariff_id`     = :tariff_id,
                     `accessories`   = :accessories, 
-                    -- `bill`          = :bill,
                     `bill_rent`     = :bill_rent,
                     `bill_access`   = :bill_access,
                     `sale`          = :sale,
@@ -289,7 +285,6 @@ trait SubOrders
                 'product_id'    => $subOrder[product_id],
                 'tariff_id'     => $subOrder[tariff_id],
                 'accessories'   => $subOrder[accessories],
-                // 'bill'          => $subOrder[bill],
                 'bill_rent'     => $subOrder[bill_rent],
                 'bill_access'   => $subOrder[bill_access],
                 'sale'          => $subOrder[sale],
@@ -334,7 +329,7 @@ trait SubOrders
 
         $delete = function ($id) {
             $sql = '
-                DELETE FROM `order_products` 
+                DELETE FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `id` = :id
             ';
@@ -354,7 +349,7 @@ trait SubOrders
         $search = function ($order_id, $product_id) {
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `order_id`        = :order_id
                 AND `product_id`      = :product_id 
@@ -389,7 +384,7 @@ trait SubOrders
         $setEndTime = function ($subOrder) {          
             $sql = '
                 UPDATE 
-                    `order_products` 
+                    `sub_orders` 
                 SET 
                     `end_time` = :end_time,
                     `status`   = :status  
@@ -417,7 +412,7 @@ trait SubOrders
         $setBill = function ($subOrder) {
             $sql = '
                 UPDATE 
-                    `order_products` 
+                    `sub_orders` 
                 SET 
                     -- `bill`        = :bill, 
                     `bill_rent`   = :bill_rent, 
@@ -431,7 +426,6 @@ trait SubOrders
             ;
 
             $d = array(
-                // 'bill'        => $subOrder[bill],
                 'bill_rent'   => $subOrder[bill_rent],
                 'bill_access' => $subOrder[bill_access],
                 'sale'        => $subOrder[sale],
@@ -484,7 +478,7 @@ trait SubOrders
                         `order_id`, 
                         `end_time` 
                     FROM 
-                        `order_products`
+                        `sub_orders`
                     WHERE 
                         `order_id` = :order_id
                 ';
@@ -550,7 +544,7 @@ trait SubOrders
     }
 
     private function abortSubOrder($subOrder) {
-        $id = $this->find('order_products', $subOrder[id_rent]);
+        $id = $this->find('sub_orders', $subOrder[id_rent]);
 
         $result = $id ? $this->changeSubOrder($subOrder) : false;
         $log = $result ? 'subOrder is aborting' : 'abortSubOrder is failed';
