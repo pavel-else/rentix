@@ -2,7 +2,8 @@
 
 trait SubOrders
 {
-    private function getSubOrders() {
+    private function getSubOrders()
+    {
         $sql = '
             SELECT * 
             FROM `sub_orders` 
@@ -22,7 +23,8 @@ trait SubOrders
         return $result;       
     }
 
-    private function getHistory() {
+    private function getHistory()
+    {
 
         $getOrderProducts = function ($order_id) {
             $sql = '
@@ -64,7 +66,8 @@ trait SubOrders
     }
 
     // productid -> id_rent
-    private function addSubOrder($subOrder) {
+    private function addSubOrder($subOrder)
+    {
         $log = $this->scanSubOrder($subOrder);
 
         if ($log) {
@@ -199,7 +202,8 @@ trait SubOrders
         $find ? $set($subOrder) : $this->writeLog('addSubOrder failed. Duble products or empty order');
     }
 
-    private function scanSubOrder($subOrder) {
+    private function scanSubOrder($subOrder)
+    {
         // Функция используется при добавлении и изменении сабордера
 
         $log = [];
@@ -225,7 +229,8 @@ trait SubOrders
         return $log ? $log : false;
     }
 
-    private function changeSubOrder($subOrder) {
+    private function changeSubOrder($subOrder)
+    {
         $log = $this->scanSubOrder($subOrder);
 
         if ($log) {
@@ -291,7 +296,7 @@ trait SubOrders
                 'paid'          => $subOrder[paid],
                 'pause_start'   => $subOrder[pause_start],
                 'pause_time'    => $subOrder[pause_time],
-                'end_time'      => $subOrder[end_time] ? date("Y-m-d H:i:s", $subOrder[end_time]) : NULL,
+                'end_time'      => $subOrder['end_time'],
                 'note'          => $subOrder[note],
                 'status'        => $subOrder[status]
             );
@@ -312,7 +317,8 @@ trait SubOrders
         return $id ? $update($id, $subOrder) : $this->writeLog('changeSubOrder failed. Product not define in DB');
     }
 
-    private function deleteSubOrder($subOrder) {
+    private function deleteSubOrder($subOrder) 
+    {
         // Функция используется при привязке сабордера к другому ордеру (splitOrder)
         
         if (empty($subOrder[product_id])) {
@@ -394,7 +400,7 @@ trait SubOrders
                     `product_id` = :product_id' 
             ;
             $d = array(
-                'end_time'   => date("Y-m-d H:i:s", $subOrder[end_time] / 1000), 
+                'end_time'   => $subOrder[end_time], 
                 'status'     => $subOrder[status],
                 'order_id'   => $subOrder[order_id],
                 'product_id' => $subOrder[product_id],
