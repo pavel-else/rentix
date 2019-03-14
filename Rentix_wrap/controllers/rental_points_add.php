@@ -29,6 +29,7 @@
     $phone = htmlspecialchars($_POST["phone"], ENT_QUOTES);
     $description = htmlspecialchars($_POST["description"], ENT_QUOTES);
     $description_short = htmlspecialchars($_POST["description_short"], ENT_QUOTES);
+    $id_rent = getID('rental_points');
 
 
     // Генерация унникального токена
@@ -65,8 +66,9 @@
         :token
     )';
     
+
     $d = array(
-        'id_rent' => getID('rental_points'),
+        'id_rent' => $id_rent,
         'name' => $name,
         'city' => $city,
         'address' => $address,
@@ -91,7 +93,63 @@
         exit();
     }
 
+    // Копируем стандартные типы ремонта
+    $copyBaseRepairTypes = function() use ($pDB, $id_rent) {
+        $get = function () use ($pDB) {
+            $sql = '
+                SELECT *
+                FROM `repair_types`
+                WHERE `id_rental_org` = 0
+            ';
+            $d = array();
+
+            return $pDB->get($sql, 0);
+        };
+
+        $set = function ($data) use ($pDB, $id_rent) {
+            if (empty($data)) {
+                return false;
+            }
+
+            foreach ($data as $type) {
+                $sql = 'INSERT INTO `repair_types` (
+                    `id`,
+                    `id_rent`,
+                    `id_rental_org`,
+                    `is_plan`,
+                    `name`,
+                    `period`,
+                    `note`
+                ) VALUES (
+                    NULL,
+                    :id_rent,
+                    :id_rental_org,
+                    :is_plan,
+                    :name,
+                    :period,
+                    :note
+                )';
+
+                $d = array(
+                    'id_rent' => $type["id_rent"],
+                    'id_rental_org' => $id_rent,
+                    'is_plan' => $type["is_plan"],
+                    'name' => $type["name"],
+                    'period' => $type["period"],
+                    'note' => $type["note"]
+                );
+
+                $pDB->set($sql, $d);             
+            }
+        };
+
+        return $set($get());
+    };
+
+    if ($result) {
+        $copyBaseRepairTypes();
+    }
+
     // Возвращаем пользователя на ту страницу, на которой он нажал на кнопку выход.
     header("HTTP/1.1 301 Moved Permanently");
     header("Location: " . $_SERVER["HTTP_REFERER"]);
-?>
