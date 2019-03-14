@@ -49,7 +49,7 @@ trait Orders
             $sql = 'INSERT INTO `orders` (
                 `id`,
                 `id_rent`,
-                `id_rent_position`,
+                `order_id_position`,
                 `id_rental_org`,
                 `status`,
                 `customer_id`,
@@ -62,7 +62,7 @@ trait Orders
             ) VALUES (
                 NULL, 
                 :id_rent, 
-                :id_rent_position, 
+                :order_id_position, 
                 :id_rental_org, 
                 :status, 
                 :order_customer_id, 
@@ -76,7 +76,7 @@ trait Orders
 
             $d = array(
                 'id_rent'            => $order[id_rent],
-                'id_rent_position'   => $order[id_rent_position],
+                'order_id_position'   => $order[order_id_position],
                 'id_rental_org'       => $this->app_id,
                 'status'              => $order[status],
                 'order_customer_id'   => $order[customer_id],
@@ -129,7 +129,7 @@ trait Orders
                     `orders` 
                 SET 
                     `id_rent`          = :id_rent,
-                    `id_rent_position` = :id_rent_position,
+                    `order_id_position` = :order_id_position,
                     `id_rental_org`     = :id_rental_org,
                     `status`            = :status,
                     `customer_id`       = :customer_id,
@@ -147,7 +147,7 @@ trait Orders
             $d = array(
                 'id'                => $id,
                 'id_rent'          => $order[id_rent],
-                'id_rent_position' => $order[id_rent_position],
+                'order_id_position' => $order[order_id_position],
                 'id_rental_org'     => $this->app_id,
                 'status'            => $order[status],
                 'customer_id'       => $order[customer_id],
