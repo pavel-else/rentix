@@ -5,7 +5,7 @@ trait SubOrders
     private function getSubOrders() {
         $sql = '
             SELECT * 
-            FROM `order_products` 
+            FROM `sub_orders` 
             WHERE `id_rental_org` = :id_rental_org
         ';
 
@@ -27,7 +27,7 @@ trait SubOrders
         $getOrderProducts = function ($order_id) {
             $sql = '
                 SELECT * 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `order_id`    = :order_id 
                 AND `id_rental_org` = :id_rental_org
             ';
@@ -44,7 +44,7 @@ trait SubOrders
             SELECT * 
             FROM `orders` 
             WHERE `id_rental_org` = :id_rental_org
-            ORDER BY `orders`.`order_id`
+            ORDER BY `orders`.`id_rent`
             DESC 
             -- LIMIT 100 
         ';  
@@ -56,7 +56,7 @@ trait SubOrders
         $orders = $this->pDB->get($sql, false, $d);
 
         foreach ($orders as $key => $order) {
-            $order[products] = $getOrderProducts($order[order_id]);            
+            $order[products] = $getOrderProducts($order[id_rent]);            
             $result[] = $order;
         }
 
@@ -82,7 +82,7 @@ trait SubOrders
                 // если есть такая запись, где `end_time` IS NULL, то продукт занят, вернуть false
                 $sql = '
                     SELECT `id` 
-                    FROM `order_products` 
+                    FROM `sub_orders` 
                     WHERE `id_rental_org` = :id_rental_org 
                     AND `status`          = :status
                 ';
@@ -101,18 +101,18 @@ trait SubOrders
                 return !$result;
             };
 
-            $searchInOrders = function ($order_id) {
+            $searchInOrders = function ($id_rent) {
                 // вернет true если найдет ордер по id
                 $sql = '
                     SELECT `id` 
                     FROM `orders` 
                     WHERE `id_rental_org` = :id_rental_org 
-                    AND `order_id`        = :order_id 
+                    AND `id_rent`        = :id_rent 
                 ';
 
                 $d = array(
                     'id_rental_org' => $this->app_id,
-                    'order_id'      => $order_id
+                    'id_rent'      => $id_rent
                 );
 
                 $result = $this->pDB->get($sql, 0, $d);
@@ -129,7 +129,7 @@ trait SubOrders
 
         $set = function ($subOrder) {
 
-            $sql = 'INSERT INTO `order_products` (
+            $sql = 'INSERT INTO `sub_orders` (
                 `id`, 
                 `id_rent`, 
                 `order_id`, 
@@ -240,7 +240,7 @@ trait SubOrders
         $search = function ($order_id, $product_id) {
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `order_id`        = :order_id 
                 AND `product_id`      = :product_id 
@@ -260,7 +260,7 @@ trait SubOrders
         $update = function ($id, $subOrder) {
 
             $sql = '
-                UPDATE `order_products` 
+                UPDATE `sub_orders` 
                 SET  
                     `order_id`      = :order_id, 
                     `product_id`    = :product_id,
@@ -334,7 +334,7 @@ trait SubOrders
 
         $delete = function ($id) {
             $sql = '
-                DELETE FROM `order_products` 
+                DELETE FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `id` = :id
             ';
@@ -354,7 +354,7 @@ trait SubOrders
         $search = function ($order_id, $product_id) {
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `order_id`        = :order_id
                 AND `product_id`      = :product_id 
@@ -389,7 +389,7 @@ trait SubOrders
         $setEndTime = function ($subOrder) {          
             $sql = '
                 UPDATE 
-                    `order_products` 
+                    `sub_orders` 
                 SET 
                     `end_time` = :end_time,
                     `status`   = :status  
@@ -417,7 +417,7 @@ trait SubOrders
         $setBill = function ($subOrder) {
             $sql = '
                 UPDATE 
-                    `order_products` 
+                    `sub_orders` 
                 SET 
                     -- `bill`        = :bill, 
                     `bill_rent`   = :bill_rent, 
@@ -478,13 +478,13 @@ trait SubOrders
             * 1. Выбираем по id продукты вместе с их временными стоп-метками
             * 2. Если на всех продуктах стоят стоп-метки - меняем статус ордера
             */
-            $getProducts = function ($order_id) {
+            $getSubOrders = function ($order_id) {
                 $sql = '
                     SELECT 
                         `order_id`, 
                         `end_time` 
                     FROM 
-                        `order_products`
+                        `sub_orders`
                     WHERE 
                         `order_id` = :order_id
                 ';
@@ -496,10 +496,10 @@ trait SubOrders
                 return $this->pDB->get($sql, false, $d);               
             };
 
-            $changeStatus = function ($order_id, array $subOrders) {
+            $changeOrderStatus = function ($id_rent, array $subOrders) {
                 /*
-                * 1. Перебираем все продуты ордера
-                * 2. Если среди них не нашлось активного продукта (end_time == null), меняем статус ордера
+                * 1. Перебираем все сабордеры ордера
+                * 2. Если среди них не нашлось активного сабордера (end_time == null), меняем статус ордера
                 */
 
                 if (empty($subOrders)) {
@@ -521,11 +521,11 @@ trait SubOrders
                         SET 
                             `status` = :status 
                         WHERE 
-                            `order_id` = :order_id
+                            `id_rent` = :id_rent
                     ';
 
                     $d = array(
-                        'order_id' => $order_id,
+                        'id_rent' => $id_rent,
                         'status'   => 'END'
                     );
 
@@ -533,7 +533,7 @@ trait SubOrders
                 } 
             };
             
-            $result = $changeStatus($subOrder[order_id], $getProducts($subOrder[order_id]));
+            $result = $changeOrderStatus($subOrder[order_id], $getSubOrders($subOrder[order_id]));
 
             $log = $result ? 'stopOrder: setOrderStatus completed' : 'stopOrder: setOrderStatus error';
 
@@ -550,7 +550,7 @@ trait SubOrders
     }
 
     private function abortSubOrder($subOrder) {
-        $id = $this->find('order_products', $subOrder[id_rent]);
+        $id = $this->find('sub_orders', $subOrder[id_rent]);
 
         $result = $id ? $this->changeSubOrder($subOrder) : false;
         $log = $result ? 'subOrder is aborting' : 'abortSubOrder is failed';
