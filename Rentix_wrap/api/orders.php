@@ -26,17 +26,17 @@ trait Orders
 
     private function newOrder($order) {
 
-        $checkID = function ($order_id) {
+        $checkID = function ($id_rent) {
             $sql = '
                 SELECT `id` 
                 FROM `orders` 
                 WHERE `id_rental_org` = :id_rental_org
-                AND `order_id` = :order_id
+                AND `id_rent` = :id_rent
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'order_id' => $order_id
+                'id_rent' => $id_rent
             );
 
             $result = $this->pDB->get($sql, 0, $d);
@@ -48,7 +48,7 @@ trait Orders
 
             $sql = 'INSERT INTO `orders` (
                 `id`,
-                `order_id`,
+                `id_rent`,
                 `order_id_position`,
                 `id_rental_org`,
                 `status`,
@@ -61,7 +61,7 @@ trait Orders
                 `promotion`
             ) VALUES (
                 NULL, 
-                :order_id, 
+                :id_rent, 
                 :order_id_position, 
                 :id_rental_org, 
                 :status, 
@@ -75,7 +75,7 @@ trait Orders
             )';
 
             $d = array(
-                'order_id'            => $order[order_id],
+                'id_rent'            => $order[id_rent],
                 'order_id_position'   => $order[order_id_position],
                 'id_rental_org'       => $this->app_id,
                 'status'              => $order[status],
@@ -91,7 +91,7 @@ trait Orders
             return $this->pDB->set($sql, $d);
         };
 
-        $result = !$checkID($order[order_id]) ? $newOrder($order) : false;
+        $result = !$checkID($order[id_rent]) ? $newOrder($order) : false;
 
         if ($result) {
             $this->writeLog('setOrder completed');
@@ -104,17 +104,17 @@ trait Orders
 
     private function changeOrder($order) {
         
-        $checkID = function ($order_id) {
+        $checkID = function ($id_rent) {
             $sql = '
                 SELECT `id` 
                 FROM `orders` 
                 WHERE `id_rental_org` = :id_rental_org
-                AND `order_id` = :order_id
+                AND `id_rent` = :id_rent
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'order_id' => $order_id
+                'id_rent' => $id_rent
             );
 
             $result = $this->pDB->get($sql, 0, $d);
@@ -128,7 +128,7 @@ trait Orders
                 UPDATE 
                     `orders` 
                 SET 
-                    `order_id`          = :order_id,
+                    `id_rent`          = :id_rent,
                     `order_id_position` = :order_id_position,
                     `id_rental_org`     = :id_rental_org,
                     `status`            = :status,
@@ -146,7 +146,7 @@ trait Orders
 
             $d = array(
                 'id'                => $id,
-                'order_id'          => $order[order_id],
+                'id_rent'          => $order[id_rent],
                 'order_id_position' => $order[order_id_position],
                 'id_rental_org'     => $this->app_id,
                 'status'            => $order[status],
@@ -161,7 +161,7 @@ trait Orders
             return $this->pDB->set($sql, $d);
         };
 
-        $id = $checkID($order[order_id]);
+        $id = $checkID($order[id_rent]);
 
         $result = $id ? $update($id, $order) : false;
 
@@ -172,25 +172,25 @@ trait Orders
         return $result;
     }
 
-    private function deleteOrder($order_id) {
+    private function deleteOrder($id_rent) {
 
-        if (empty($order_id)) {
+        if (empty($id_rent)) {
             return false;
         }
 
-        $cheack = function ($order_id) {
-            //Вернет true если в ордере есть активные сабордеры или false иначе
+        $cheack = function ($id_rent) {
+            //Вернет true если в ордере есть активные товары или false иначе
             $sql = '
                 SELECT `id` 
-                FROM `sub_orders` 
+                FROM `order_products` 
                 WHERE `id_rental_org` = :id_rental_org 
-                AND `order_id` = :order_id
+                AND `id_rent` = :id_rent
                 AND `status`   = :status
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'order_id'      => $order_id,
+                'id_rent'      => $id_rent,
                 'status'        => 'ACTIVE',
             );
 
@@ -205,17 +205,17 @@ trait Orders
             return $result;
         };
 
-        $search = function ($order_id) {
+        $search = function ($id_rent) {
             $sql = '
                 SELECT `id` 
                 FROM `orders` 
                 WHERE `id_rental_org` = :id_rental_org 
-                AND `order_id`        = :order_id
+                AND `id_rent`        = :id_rent
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'order_id'      => $order_id
+                'id_rent'      => $id_rent
             );
 
             $result = $this->pDB->get($sql, 0, $d);
@@ -239,9 +239,9 @@ trait Orders
         };
 
         // Если нет активных ордеров
-        $result = $cheack($order_id)
+        $result = $cheack($id_rent)
             ? false
-            : $delete($search($order_id));          
+            : $delete($search($id_rent));          
 
            
         $log = $result ? "deleteOrder completed." : "deleteOrder failed.";
@@ -261,7 +261,7 @@ trait Orders
         $oldSubOrder = $data[subOrder];
         $newSubOrder = $data[subOrder];
 
-        $newSubOrder[order_id] = $order[order_id];
+        $newSubOrder[id_rent] = $order[id_rent];
 
         $this->newOrder($order);
         $this->deleteSubOrder($oldSubOrder);
@@ -271,3 +271,5 @@ trait Orders
 
     // stopOrder in SubOrders
 }
+
+?>
