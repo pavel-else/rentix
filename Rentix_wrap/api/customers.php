@@ -2,7 +2,8 @@
 
 trait Customers
 {
-    private function getCustomers() {
+    private function getCustomers()
+    {
         $sql = '
             SELECT * 
             FROM `customers` 
@@ -24,7 +25,8 @@ trait Customers
         return $result; 
     }
 
-    private function setCustomer($customer) {
+    private function setCustomer($customer)
+    {
         /*
         * Проверяем, существует ли пользователь с указанным id.
         * Если да - обновляем данные.
@@ -183,7 +185,8 @@ trait Customers
         return $id ? $update($id, $customer) : $setCustomer($customer);
     }
 
-    private function deleteCustomer($id) {
+    private function deleteCustomer($id)
+    {
 
         $checkID = function ($id) {
             if (!$id) {
@@ -231,5 +234,3 @@ trait Customers
         }
     } 
 }
-
-?>
