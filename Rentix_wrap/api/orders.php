@@ -178,11 +178,16 @@ trait Orders
             return false;
         }
 
+<<<<<<< HEAD
         $cheack = function ($id_rent) {
             //Вернет true если в ордере есть активные товары или false иначе
+=======
+        $cheack = function ($order_id) {
+            //Вернет true если в ордере есть активные сабордеры или false иначе
+>>>>>>> 5ce6b00c13ccbf3910e411f362c6ea6b99d72cb1
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `id_rent` = :id_rent
                 AND `status`   = :status
@@ -271,5 +276,3 @@ trait Orders
 
     // stopOrder in SubOrders
 }
-
-?>
