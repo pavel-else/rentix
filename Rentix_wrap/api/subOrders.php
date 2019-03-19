@@ -296,11 +296,7 @@ trait SubOrders
                 'paid'          => $subOrder[paid],
                 'pause_start'   => $subOrder[pause_start],
                 'pause_time'    => $subOrder[pause_time],
-<<<<<<< HEAD
                 'end_time'      => $subOrder[end_time],
-=======
-                'end_time'      => $subOrder['end_time'],
->>>>>>> 5ce6b00c13ccbf3910e411f362c6ea6b99d72cb1
                 'note'          => $subOrder[note],
                 'status'        => $subOrder[status]
             );
