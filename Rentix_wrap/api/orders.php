@@ -135,6 +135,7 @@ trait Orders
                     `customer_id`       = :customer_id,
                     `customer_name`     = :customer_name,
                     `advance`           = :advance,
+                    `off_balance`           = :off_balance,
                     `deposit`           = :deposit,      
                     `note`              = :note,     
                     `promotion`         = :promotion
@@ -153,6 +154,7 @@ trait Orders
                 'customer_id'       => $order[customer_id],
                 'customer_name'     => $order[customer_name],
                 'advance'           => $order[advance],
+                'off_balance'       => $order[off_balance],
                 'deposit'           => $order[deposit],      
                 'note'              => $order[note],     
                 'promotion'         => $order[promotion]
@@ -182,15 +184,15 @@ trait Orders
             //Вернет true если в ордере есть активные товары или false иначе
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
-                AND `id_rent` = :id_rent
-                AND `status`   = :status
+                AND `id_rent`         = :id_rent
+                AND `status`          = :status
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'id_rent'      => $id_rent,
+                'id_rent'       => $id_rent,
                 'status'        => 'ACTIVE',
             );
 
@@ -210,12 +212,12 @@ trait Orders
                 SELECT `id` 
                 FROM `orders` 
                 WHERE `id_rental_org` = :id_rental_org 
-                AND `id_rent`        = :id_rent
+                AND `id_rent`         = :id_rent
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'id_rent'      => $id_rent
+                'id_rent'       => $id_rent
             );
 
             $result = $this->pDB->get($sql, 0, $d);
@@ -261,15 +263,13 @@ trait Orders
         $oldSubOrder = $data[subOrder];
         $newSubOrder = $data[subOrder];
 
-        $newSubOrder[id_rent] = $order[id_rent];
+        $newSubOrder[order_id] = $order[id_rent];
 
         $this->newOrder($order);
         $this->deleteSubOrder($oldSubOrder);
-        $this->addSubOrder($newSubOrder);
+        $this->newSubOrder($newSubOrder);
         $this->deleteOrder($order[old_id]);
     }     
 
     // stopOrder in SubOrders
 }
-
-?>

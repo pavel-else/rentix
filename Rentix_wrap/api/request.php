@@ -116,8 +116,8 @@ class Request
                 case 'getHistory':
                     $this->response['history'] = $this->getHistory($value);
                 break;
-                case 'addOrderProduct':
-                    $this->addSubOrder($value);
+                case 'newSubOrder':
+                    $this->newSubOrder($value);
                 break;
                 case 'changeOrderProduct': //Deprecated
                     $this->changeSubOrder($value);

@@ -52,11 +52,10 @@ trait Customers
             return $result[0][id];
         };
 
-        $update = function ($id, $customer) {
+        $update = function ($customer) {
             $sql = '
                 UPDATE `customers` 
                 SET 
-                `id_rent` = :id_rent,
                 `fname` = :fname,
                 `sname` = :sname,
                 `tname` = :tname,
@@ -69,14 +68,15 @@ trait Customers
                 `note` = :note,
                 `updated` = :updated
 
-                WHERE `id` = :id
+                WHERE `id_rent`     = :id_rent
                 AND `id_rental_org` = :id_rental_org
             ';
 
             $d = array(
-                'id' =>             $id,
+
                 'id_rental_org' =>  $this->app_id,
                 'id_rent' =>        $customer[id_rent],
+
                 'fname' =>          $customer[fname],
                 'sname' =>          $customer[sname],
                 'tname' =>          $customer[tname],
@@ -101,7 +101,7 @@ trait Customers
             return $result;
         };
 
-        $setCustomer = function ($customer) {
+        $newCustomer = function ($customer) {
             $getIncMaxID = function () {
                 $sql = '
                     SELECT `id_rent` 
@@ -182,7 +182,12 @@ trait Customers
 
         $id = $checkID($customer[id_rent]);
 
-        return $id ? $update($id, $customer) : $setCustomer($customer);
+        if ($this->findIdRentIn('customers', $customer[id_rent])) {
+            $update($customer);
+        } else {
+            $newCustomer($customer);
+        }
+        //return $id ? $update($id, $customer) : $setCustomer($customer);
     }
 
     private function deleteCustomer($id)
