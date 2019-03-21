@@ -2,16 +2,47 @@
 
 trait Orders
 {
-    private function getOrders() {
+    // private function getOrders() {
+    //     $sql = '
+    //         SELECT * 
+    //         FROM `orders` 
+    //         WHERE `status` = :status  
+    //         AND `id_rental_org` = :id_rental_org
+    //     ';
+
+    //     $d = array (
+    //         'status'        => 'ACTIVE',
+    //         'id_rental_org' => $this->app_id
+    //     );
+
+    //     $result = $this->pDB->get($sql, false, $d);
+        
+    //     $log = $result ? "getOrders completed" : "getOrders failed";
+
+    //     $this->writeLog($log);
+
+    //     return $result;
+    // }
+
+    private function getOrders($filter = 'ACTIVE') {
         $sql = '
             SELECT * 
             FROM `orders` 
-            WHERE `status` = :status  
-            AND `id_rental_org` = :id_rental_org
+            WHERE `id_rental_org` = :id_rental_org
         ';
 
+        switch ($filter) {
+            case 'all' :
+                $sql .= '';
+            break;
+            case 'active' :
+                $sql .= " AND `status` = 'ACTIVE'";
+            break;
+            default :
+                $sql .= " AND `status` = 'ACTIVE'";
+        }
+
         $d = array (
-            'status'        => 'ACTIVE',
             'id_rental_org' => $this->app_id
         );
 
