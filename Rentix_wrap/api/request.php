@@ -94,7 +94,10 @@ class Request
 
                 // Orders
                 case 'getOrders':
-                    $this->response['orders'] = $this->getOrders($value);
+                    $this->response['orders'] = $this->getOrders();
+                break;
+                case 'getActiveOrders':
+                    $this->response['active_orders'] = $this->getActiveOrders();
                 break;
                 case 'newOrder':
                     $this->newOrder($value);
