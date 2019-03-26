@@ -116,6 +116,9 @@ class Request
                 case 'getSubOrders':
                     $this->response['sub_orders'] = $this->getSubOrders();
                 break;
+                case 'getActiveSubOrders':
+                    $this->response['active_sub_orders'] = $this->getActiveSubOrders();
+                break;
                 case 'getHistory':
                     $this->response['history'] = $this->getHistory($value);
                 break;

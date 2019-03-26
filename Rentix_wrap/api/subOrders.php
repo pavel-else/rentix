@@ -22,7 +22,30 @@ trait SubOrders
 
         return $result;       
     }
+    private function getActiveSubOrders()
+    {
+        $sql = '
+            SELECT * 
+            FROM `sub_orders` 
+            WHERE `id_rental_org` = :id_rental_org
+            AND `status` = "ACTIVE"
+            OR `status` = "PAUSE"
+        ';
 
+        $d = array (
+            'id_rental_org' => $this->app_id
+        );
+
+        $result = $this->pDB->get($sql, false, $d);
+        
+        $log = $result ? "getActiveSubOrders completed" : "getActiveSubOrders failed";
+
+        $this->writeLog($log);
+
+        return $result;       
+    }
+
+    // Depricated
     private function getHistory()
     {
 
@@ -32,6 +55,7 @@ trait SubOrders
                 FROM `sub_orders` 
                 WHERE `order_id`    = :order_id 
                 AND `id_rental_org` = :id_rental_org
+                OR
             ';
 
             $d = array (
