@@ -2,7 +2,7 @@
 
 trait Orders
 {
-    private function getOrders()
+    private function getOrders($filter = 'ACTIVE')
     {
         $sql = '
             SELECT * 
@@ -12,9 +12,17 @@ trait Orders
         ';
 
         $d = array (
-            'status'        => 'ACTIVE',
             'id_rental_org' => $this->app_id
         );
+        switch ($filter) {
+            case 'all':
+                $d[status] = 'END';
+                break;
+            case '': 
+                $d[status] = 'ACTIVE';
+                break;
+        }       
+
 
         $result = $this->pDB->get($sql, false, $d);
         
