@@ -44,6 +44,25 @@ trait Tariffs
         * 3. или Обновление существующего
         */
         
+
+        // $checkID = function ($id_rent) {
+        //     $sql = '
+        //         SELECT `id` 
+        //         FROM `tariffs` 
+        //         WHERE `id_rental_org` = :id_rental_org
+        //         AND `id_rent` = :id_rent
+        //     ';
+
+        //     $d = array(
+        //         'id_rental_org' => $this->app_id,
+        //         'id_rent' => $id_rent
+        //     );
+
+        //     $result = $this->pDB->get($sql, 0, $d);
+
+        //     return $result[0][id];
+        // };
+
         $newTariff = function($tariff) {
             /*
             * Функция в зависимости от типа тарифа готовит Sql 
@@ -178,6 +197,11 @@ trait Tariffs
 
             return $result;
         };
+
+        // $id = $checkID($tariff[id_rent]);
+
+        // return $id ? $update($id, $tariff) : $newTariff($tariff);
+
 
         $id = $this->findIdRentIn('tariffs', $tariff['id_rent']);
 

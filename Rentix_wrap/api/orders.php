@@ -2,7 +2,8 @@
 
 trait Orders
 {
-    private function getOrders() {
+    private function getOrders()
+    {
         $sql = '
             SELECT * 
             FROM `orders` 
@@ -24,7 +25,8 @@ trait Orders
         return $result;
     }
 
-    private function newOrder($order) {
+    private function newOrder($order)
+    {
 
         $checkID = function ($id_rent) {
             $sql = '
@@ -94,15 +96,16 @@ trait Orders
         $result = !$checkID($order[id_rent]) ? $newOrder($order) : false;
 
         if ($result) {
-            $this->writeLog('setOrder completed');
+            $this->writeLog('newOrder completed');
         } else {
-            $this->writeLog('setOrder failed');
+            $this->writeLog('newOrder failed');
         }
 
         return $result;
     }
 
-    private function changeOrder($order) {
+    private function changeOrder($order)
+    {
         
         $checkID = function ($id_rent) {
             $sql = '
@@ -172,7 +175,8 @@ trait Orders
         return $result;
     }
 
-    private function deleteOrder($id_rent) {
+    private function deleteOrder($id_rent)
+    {
 
         if (empty($id_rent)) {
             return false;
@@ -182,7 +186,7 @@ trait Orders
             //Вернет true если в ордере есть активные товары или false иначе
             $sql = '
                 SELECT `id` 
-                FROM `order_products` 
+                FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `id_rent` = :id_rent
                 AND `status`   = :status
@@ -236,6 +240,7 @@ trait Orders
             );
 
             return $this->pDB->set($sql, $d);
+
         };
 
         // Если нет активных ордеров
@@ -251,8 +256,8 @@ trait Orders
         return $result;        
     }
 
-    private function splitOrder($data) {
-
+    private function splitOrder($data)
+    {   
         if (empty($data)) {
             return false;
         }
@@ -261,15 +266,13 @@ trait Orders
         $oldSubOrder = $data[subOrder];
         $newSubOrder = $data[subOrder];
 
-        $newSubOrder[id_rent] = $order[id_rent];
+        $newSubOrder[order_id] = $order[id_rent];
 
         $this->newOrder($order);
         $this->deleteSubOrder($oldSubOrder);
-        $this->addSubOrder($newSubOrder);
+        $this->newSubOrder($newSubOrder);
         $this->deleteOrder($order[old_id]);
     }     
 
     // stopOrder in SubOrders
 }
-
-?>

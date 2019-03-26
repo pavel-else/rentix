@@ -66,12 +66,12 @@ trait SubOrders
     }
 
     // productid -> id_rent
-    private function addSubOrder($subOrder)
+    private function newSubOrder($subOrder)
     {
         $log = $this->scanSubOrder($subOrder);
 
         if ($log) {
-            $this->writeLog($log);
+            $this->writeLog(json_encode($log));
 
             return false;
         }
@@ -560,4 +560,3 @@ trait SubOrders
         return result;
     }
 }
-?>
