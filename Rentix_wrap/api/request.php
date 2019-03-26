@@ -311,68 +311,6 @@ class Request
 
         return $result ? ++$result[0][id_rent] : 1;    
     }
-
-    private function importCustomers()
-    {
-        // 1. Выбрать склиентов
-        // 2. Перебор клиентов
-        // 3. Поиск по фамилии в Customers
-        // 4. Если не найдено - сделать новый id_rent
-        // 5. запись
-        $select = function() {
-            $sql = "
-                SELECT * 
-                FROM `clients` 
-            ";
-            $d = array(
-                // 'id_rental_org' => $this->app_id,
-                // 'id_rent'       => $id_rent
-            );
-            return $this->pDB->get($sql, 0, $d);            
-        };
-        $search = function($client) {
-            $sql = '
-                SELECT * 
-                FROM `customers` 
-                WHERE `fname` = :fname
-                AND `sname` = :sname
-                AND `tname` = :tname
-                AND `id_rental_org` = :id_rental_org
-            ';
-            $d = array(
-                'id_rental_org' => $this->app_id,
-                'fname' => $client[fname],
-                'sname' => $client[sname],
-                'tname' => $client[tname],
-            );
-            return $this->pDB->get($sql, 0, $d)[0]; 
-        };
-        $getID = function() {
-            $sql = '
-                SELECT `id_rent`  
-                FROM `customers` 
-                WHERE `id_rental_org` = :id_rental_org
-                ORDER BY `id_rent`
-                DESC LIMIT 1 
-            ';
-            $d = array(
-                'id_rental_org' => $this->app_id,
-            );
-            $result = $this->pDB->get($sql, 0, $d);
-            return $result ? ++$result[0][id_rent] : 1;          
-        };
-        $clients = $select();
-        $insert = function() {
-        };
-        $log = [];
-        foreach ($clients as $client) {
-            if (!$search($client)) {
-                $client[id_rent] = $getID();
-                $this->setCustomer($client);
-            }
-        }
-        $this->writeLog($log);
-    }
 }
 
 

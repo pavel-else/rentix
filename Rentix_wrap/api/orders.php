@@ -7,7 +7,7 @@ trait Orders
         $sql = '
             SELECT * 
             FROM `orders` 
-            AND `id_rental_org` = :id_rental_org
+            WHERE `id_rental_org` = :id_rental_org
         ';
 
         $d = array (
@@ -49,25 +49,6 @@ trait Orders
 
     private function newOrder($order)
     {
-
-        $checkID = function ($id_rent) {
-            $sql = '
-                SELECT `id` 
-                FROM `orders` 
-                WHERE `id_rental_org` = :id_rental_org
-                AND `id_rent` = :id_rent
-            ';
-
-            $d = array(
-                'id_rental_org' => $this->app_id,
-                'id_rent' => $id_rent
-            );
-
-            $result = $this->pDB->get($sql, 0, $d);
-
-            return $result[0][id];
-        };
-
         $newOrder = function ($order) {           
 
             $sql = 'INSERT INTO `orders` (
@@ -99,7 +80,7 @@ trait Orders
             )';
 
             $d = array(
-                'id_rent'            => $order[id_rent],
+                'id_rent'             => $this->getIdRentIn('orders'),
                 'order_id_position'   => $order[order_id_position],
                 'id_rental_org'       => $this->app_id,
                 'status'              => $order[status],
@@ -115,7 +96,7 @@ trait Orders
             return $this->pDB->set($sql, $d);
         };
 
-        $result = !$checkID($order[id_rent]) ? $newOrder($order) : false;
+        $result = !$this->findIdRentIn('orders', $order[id_rent]) ? $newOrder($order) : false;
 
         if ($result) {
             $this->writeLog('newOrder completed');
