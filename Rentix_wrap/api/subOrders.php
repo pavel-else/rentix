@@ -22,6 +22,7 @@ trait SubOrders
 
         return $result;       
     }
+
     private function getActiveSubOrders()
     {
         $sql = '
@@ -92,138 +93,73 @@ trait SubOrders
     // productid -> id_rent
     private function newSubOrder($subOrder)
     {
-        $log = $this->scanSubOrder($subOrder);
+        $sql = 'INSERT INTO `sub_orders` (
+            `id`, 
+            `id_rent`, 
+            `order_id`, 
+            `id_rental_org`, 
+            `product_id`,
+            `tariff_id`,
+            `bill_rent`, 
+            `bill_access`, 
+            `accessories`,
+            `sale`,
+            `paid`, 
+            `pause_start`,
+            `pause_time`,
+            `end_time`,
+            `note`, 
+            `status` 
+        ) VALUES (
+            NULL,
+            :id_rent,  
+            :order_id, 
+            :id_rental_org, 
+            :product_id,
+            :tariff_id,
+            :bill_rent,
+            :bill_access, 
+            :accessories, 
+            :sale,
+            :paid, 
+            :pause_start,
+            :pause_time,
+            :end_time, 
+            :note, 
+            :status
+        )';
 
-        if ($log) {
-            $this->writeLog(json_encode($log));
+        $d = array(
+            'id_rent'       => $this->getIdRent('sub_orders'),
 
-            return false;
-        }
+            // По идее новый ордер и новый сабордер приходят в одной транзакции,
+            // поэтому, если мы решили отказаться от присвоения id_rent ордеру на стороне клиента,
+            // можно просто найти максимальный id_rent среди ордеров
+            // но это так себе вариант, если честно
+            'order_id'      => $this->getMaxIdRent('orders'),
+            'id_rental_org' => $this->app_id,
+            'product_id'    => $subOrder[product_id],
+            'tariff_id'     => $subOrder[tariff_id],
+            'accessories'   => $subOrder[accessories],
+            'bill_rent'     => $subOrder[bill_rent],
+            'bill_access'   => $subOrder[bill_access],
+            'sale'          => $subOrder[sale],
+            'paid'          => $subOrder[paid],
+            'pause_start'   => $subOrder[pause_start],
+            'pause_time'    => $subOrder[pause_time],
+            'end_time'      => $subOrder[end_time] ? date("Y-m-d H:i:s", $subOrder[end_time]) : NULL,
+            'note'          => $subOrder[note],
+            'status'        => $subOrder[status]
+        );
 
-        $search = function ($order_id, $product_id) {
-            // Запись не будет проведена если товар уже в прокате или ордера не существует
+        
+        $result = $this->pDB->set($sql, $d);
 
-            $searchInOrderProduct = function ($product_id) {
+        $log = $result ? 'newSubOrder complete' : 'newSubOrder failed';
 
-                // вернет true если продукт свободен
-                // если есть такая запись, где `end_time` IS NULL, то продукт занят, вернуть false
-                $sql = '
-                    SELECT `id` 
-                    FROM `sub_orders` 
-                    WHERE `id_rental_org` = :id_rental_org 
-                    AND `status`          = :status
-                ';
+        $this->writeLog($log);
 
-                $d = array(
-                    'id_rental_org' => $this->app_id,
-                    'status'        => $status
-                );
-
-                $result = $this->pDB->get($sql, 0, $d);
-
-                if ($result) {
-                    $this->writeLog('addSubOrder failed. free product not found');
-                }
-
-                return !$result;
-            };
-
-            $searchInOrders = function ($id_rent) {
-                // вернет true если найдет ордер по id
-                $sql = '
-                    SELECT `id` 
-                    FROM `orders` 
-                    WHERE `id_rental_org` = :id_rental_org 
-                    AND `id_rent`        = :id_rent 
-                ';
-
-                $d = array(
-                    'id_rental_org' => $this->app_id,
-                    'id_rent'      => $id_rent
-                );
-
-                $result = $this->pDB->get($sql, 0, $d);
-
-                if (!$result) {
-                    $this->writeLog('addSubOrder failed. Order not found');
-                }
-
-                return $result;
-            };
-
-            return $searchInOrderProduct($product_id) && $searchInOrders($order_id);
-        };
-
-        $set = function ($subOrder) {
-
-            $sql = 'INSERT INTO `sub_orders` (
-                `id`, 
-                `id_rent`, 
-                `order_id`, 
-                `id_rental_org`, 
-                `product_id`,
-                `tariff_id`,
-                `bill_rent`, 
-                `bill_access`, 
-                `accessories`,
-                `sale`,
-                `paid`, 
-                `pause_start`,
-                `pause_time`,
-                `end_time`,
-                `note`, 
-                `status` 
-            ) VALUES (
-                NULL,
-                :id_rent,  
-                :order_id, 
-                :id_rental_org, 
-                :product_id,
-                :tariff_id,
-                :bill_rent,
-                :bill_access, 
-                :accessories, 
-                :sale,
-                :paid, 
-                :pause_start,
-                :pause_time,
-                :end_time, 
-                :note, 
-                :status
-            )';
-
-            $d = array(
-                'id_rent'       => $subOrder[id_rent],
-                'order_id'      => $subOrder[order_id],
-                'id_rental_org' => $this->app_id,
-                'product_id'    => $subOrder[product_id],
-                'tariff_id'     => $subOrder[tariff_id],
-                'accessories'   => $subOrder[accessories],
-                'bill_rent'     => $subOrder[bill_rent],
-                'bill_access'   => $subOrder[bill_access],
-                'sale'          => $subOrder[sale],
-                'paid'          => $subOrder[paid],
-                'pause_start'   => $subOrder[pause_start],
-                'pause_time'    => $subOrder[pause_time],
-                'end_time'      => $subOrder[end_time] ? date("Y-m-d H:i:s", $subOrder[end_time]) : NULL,
-                'note'          => $subOrder[note],
-                'status'        => $subOrder[status]
-            );
-
-            
-            $result = $this->pDB->set($sql, $d);
-
-            $log = $result ? 'addSubOrder complete' : 'addSubOrder failed';
-
-            $this->writeLog($log);
-
-            return $result;
-        };
-
-        $find = $search($subOrder[order_id], $subOrder[product_id]);
-
-
-        $find ? $set($subOrder) : $this->writeLog('addSubOrder failed. Duble products or empty order');
+        return $result;
     }
 
     private function scanSubOrder($subOrder)

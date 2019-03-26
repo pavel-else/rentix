@@ -272,7 +272,17 @@ class Request
         }
         return $pDB;
     }
-    /* Общая функция поиска id_rent в указанной таблице*/
+
+    /* 
+    * Общая функция поиска id_rent в указанной таблице
+    * Возвращает чистый id в качестве бонуса
+    */
+    private function findIdRent($tableName, $id_rent)
+    {
+        return $this->getIdRentIn($tableName, $is_rent);
+    }
+
+    // Depricated!
     private function findIdRentIn($tableName, $id_rent)
     {
         $sql = "
@@ -281,20 +291,29 @@ class Request
             WHERE `id_rental_org` = :id_rental_org
             AND `id_rent`         = :id_rent
         ";
+
         $d = array(
             'id_rental_org' => $this->app_id,
             'id_rent'       => $id_rent
         );
+
         $result = $this->pDB->get($sql, 0, $d);
-        return $result[0][id];   
+
+        return $result ? $result[0][id] : false;   
     }
 
+    /*
+    * Запрос БД на максимальный id_rent в таблице.
+    * Возвращает увеличенный id_rent или 1 если  ничего не найдено
+    */
+    private function getIdRent($tableName)
+    {
+        return $this->getIdRentIn($tableName);
+    }
+
+    // Depricated!
     private function getIdRentIn($tableName)
     {
-
-        // Запрос БД на максимальный id_rent.
-        // Возвращает увеличенный id_rent или 1 если  ничего не найдено
-
         $sql = "
             SELECT `id_rent` 
             FROM $tableName 
@@ -310,6 +329,24 @@ class Request
         $result = $this->pDB->get($sql, 0, $d);
 
         return $result ? ++$result[0][id_rent] : 1;    
+    }
+
+    private function getMaxIdRent($tableName) {
+        $sql = "
+            SELECT `id_rent` 
+            FROM $tableName 
+            WHERE `id_rental_org` = :id_rental_org 
+            ORDER BY `id_rent`
+            DESC LIMIT 1
+        ";
+
+        $d = array(
+            'id_rental_org' => $this->app_id
+        );
+
+        $result = $this->pDB->get($sql, 0, $d);
+
+        return $result ? $result[0][id_rent] : 0;         
     }
 }
 
