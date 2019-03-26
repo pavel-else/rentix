@@ -30,10 +30,11 @@ trait GeneralSettings
             if (!$name) {
                 return null;
             }
+            $this->writeLog($name);
 
             $sql = '
                 SELECT `id` 
-                FROM `options` 
+                FROM `generall_settings` 
                 WHERE `name` = :name
                 AND `id_rental_org` = :id_rental_org
             ';

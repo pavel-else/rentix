@@ -2,7 +2,8 @@
 
 trait Tariffs
 {
-    private function getTariffs() {
+    private function getTariffs() 
+    {
         /*
         * Функция Выбирает тарифы из БД
         * Корректирует вывод для поседующей работы на клиенте
@@ -31,7 +32,8 @@ trait Tariffs
         return $filter($this->pDB->get($sql, 0, $d));
     }
     
-    private function setTariff($tariff) {
+    private function setTariff($tariff) 
+    {
         /*
         * Функция принимает тариф с клиентской стороны и
         * Записывает в БД новый тариф (или обновляет существующий в БД)
@@ -42,25 +44,6 @@ trait Tariffs
         * 3. или Обновление существующего
         */
         
-
-        $checkID = function ($id_rent) {
-            $sql = '
-                SELECT `id` 
-                FROM `tariffs` 
-                WHERE `id_rental_org` = :id_rental_org
-                AND `id_rent` = :id_rent
-            ';
-
-            $d = array(
-                'id_rental_org' => $this->app_id,
-                'id_rent' => $id_rent
-            );
-
-            $result = $this->pDB->get($sql, 0, $d);
-
-            return $result[0][id];
-        };
-
         $newTariff = function($tariff) {
             /*
             * Функция в зависимости от типа тарифа готовит Sql 
@@ -102,6 +85,7 @@ trait Tariffs
                 `_h_min`,
                 `_d_before`,
                 `_d_after`,
+                `mileage`,
                 `cost`,
                 `note`
             ) VALUES (
@@ -115,6 +99,7 @@ trait Tariffs
                 :_h_min,
                 :_d_before,
                 :_d_after,
+                :mileage,
                 :cost,
                 :note
             )';
@@ -130,6 +115,7 @@ trait Tariffs
                 '_d_before'     => $tariff[_d_before],
                 '_d_after'      => $tariff[_d_after],
                 'cost'          => $tariff[cost],
+                'mileage'       => $tariff[mileage],
                 'note'          => $tariff[note]
             );
             
@@ -146,14 +132,12 @@ trait Tariffs
             $this->writeLog($tariff);
         };
 
-        $update = function ($id, $tariff) {
+        $update = function ($tariff) {
             // Функция по id обновляет соотв. запись в таблице
             
             $sql = '
                 UPDATE `tariffs` 
                 SET 
-                    `id_rent`       = :id_rent,
-                    `id_rental_org` = :id_rental_org,
                     `type`          = :type, 
                     `name`          = :name,
                     `_h_h`          = :_h_h,
@@ -161,15 +145,14 @@ trait Tariffs
                     `_h_min`        = :_h_min,
                     `_d_before`     = :_d_before,
                     `_d_after`      = :_d_after,
+                    `mileage`       = :mileage,
                     `cost`          = :cost,
                     `note`          = :note 
-                WHERE `id` = :id
+                WHERE `id_rent`     = :id_rent
+                AND `id_rental_org` = :id_rental_org
             ';
 
             $d = array(
-                'id'            => $id,
-                'id_rent'       => $tariff[id_rent],
-                'id_rental_org' => $this->app_id,
                 'type'          => $tariff[type],
                 'name'          => $tariff[name],
                 '_h_h'          => $tariff[_h_h] ? implode(',', $tariff[_h_h]) : '',
@@ -177,8 +160,12 @@ trait Tariffs
                 '_h_min'        => $tariff[_h_min],
                 '_d_before'     => $tariff[_d_before],
                 '_d_after'      => $tariff[_d_after],
+                'mileage'       => $tariff[mileage],
                 'cost'          => $tariff[cost],
-                'note'          => $tariff[note]
+                'note'          => $tariff[note],
+
+                'id_rent'       => $tariff[id_rent],
+                'id_rental_org' => $this->app_id
             );
 
             $result = $this->pDB->set($sql, $d);
@@ -192,12 +179,19 @@ trait Tariffs
             return $result;
         };
 
-        $id = $checkID($tariff[id_rent]);
+        $id = $this->findIdRentIn('tariffs', $tariff['id_rent']);
 
-        return $id ? $update($id, $tariff) : $newTariff($tariff);
+        if (!$id) {
+            $this->writeLog('Tariffs: id_rent is not found. Make new tariff', 'id_rent = ', $tariff['id_rent']);
+        } else {
+            $this->writeLog('Tariffs: id_rent is found. Make update this tariff', 'id_rent = ', $id);
+        }
+
+        return $id ? $update($tariff) : $newTariff($tariff);
     }
 
-    private function deleteTariff($id_rent) {
+    private function deleteTariff($id_rent) 
+    {
         /*
         * Функция принимает id_rent тарифа
         * Находит id тарифа в таблицe
