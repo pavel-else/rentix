@@ -4,12 +4,23 @@ trait Orders
 {
     private function getOrders($filter = 'ACTIVE')
     {
+
         $sql = '
             SELECT * 
             FROM `orders` 
-            WHERE `status` = :status  
-            AND `id_rental_org` = :id_rental_org
+            WHERE `id_rental_org` = :id_rental_org
         ';
+
+        switch ($filter) {
+            case 'all' :
+                $sql .= '';
+            break;
+            case 'active' :
+                $sql .= " AND `status` = 'ACTIVE'";
+            break;
+            default :
+                $sql .= " AND `status` = 'ACTIVE'";
+        }
 
         $d = array (
             'id_rental_org' => $this->app_id
@@ -146,6 +157,7 @@ trait Orders
                     `customer_id`       = :customer_id,
                     `customer_name`     = :customer_name,
                     `advance`           = :advance,
+                    `off_balance`           = :off_balance,
                     `deposit`           = :deposit,      
                     `note`              = :note,     
                     `promotion`         = :promotion
@@ -164,6 +176,7 @@ trait Orders
                 'customer_id'       => $order[customer_id],
                 'customer_name'     => $order[customer_name],
                 'advance'           => $order[advance],
+                'off_balance'       => $order[off_balance],
                 'deposit'           => $order[deposit],      
                 'note'              => $order[note],     
                 'promotion'         => $order[promotion]
@@ -196,13 +209,13 @@ trait Orders
                 SELECT `id` 
                 FROM `sub_orders` 
                 WHERE `id_rental_org` = :id_rental_org 
-                AND `id_rent` = :id_rent
-                AND `status`   = :status
+                AND `id_rent`         = :id_rent
+                AND `status`          = :status
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'id_rent'      => $id_rent,
+                'id_rent'       => $id_rent,
                 'status'        => 'ACTIVE',
             );
 
@@ -222,12 +235,12 @@ trait Orders
                 SELECT `id` 
                 FROM `orders` 
                 WHERE `id_rental_org` = :id_rental_org 
-                AND `id_rent`        = :id_rent
+                AND `id_rent`         = :id_rent
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'id_rent'      => $id_rent
+                'id_rent'       => $id_rent
             );
 
             $result = $this->pDB->get($sql, 0, $d);
