@@ -28,13 +28,12 @@ trait Orders
         $sql = '
             SELECT * 
             FROM `orders` 
-            WHERE `status` = :status  
-            AND `id_rental_org` = :id_rental_org
+            WHERE `id_rental_org` = :id_rental_org   
+            AND `status` = "ACTIVE"
         ';
 
         $d = array (
             'id_rental_org' => $this->app_id,
-            'status' => 'ACTIVE'
         );
 
 
