@@ -48,7 +48,7 @@ trait Orders
 
     private function newOrder($order)
     {
-        $newOrder = function ($order) {           
+        $newOrder = function ($order) {
 
             $sql = 'INSERT INTO `orders` (
                 `id`,
@@ -264,15 +264,20 @@ trait Orders
             return false;
         }
 
+        // Новый ордер
         $order = $data[order];
-        $oldSubOrder = $data[subOrder];
-        $newSubOrder = $data[subOrder];
-
-        $newSubOrder[order_id] = $order[id_rent];
-
         $this->newOrder($order);
+
+        // Удалаяем старый сабордер
+        $oldSubOrder = $data[subOrder];
         $this->deleteSubOrder($oldSubOrder);
+
+        // Добавляем новый сабордер
+        $newSubOrder = $data[subOrder];
+        $newSubOrder[order_id] = $this->getMaxIdRent('orders');
         $this->newSubOrder($newSubOrder);
+
+        // Удаляем старый ордер
         $this->deleteOrder($order[old_id]);
     }     
 
