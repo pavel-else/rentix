@@ -191,90 +191,61 @@ trait SubOrders
 
     private function changeSubOrder($subOrder)
     {
-        $log = $this->scanSubOrder($subOrder);
-
-        if ($log) {
-            $this->writeLog($log);
+        if (!$this->findIdRent('sub_orders', $subOrder[id_rent])) {
+            $this->writeLog('changeSubOrder: failed! id_rent not find.' . $subOrder[id_rent]);
 
             return false;
         }
 
-        $search = function ($order_id, $product_id) {
-            $sql = '
-                SELECT `id` 
-                FROM `sub_orders` 
-                WHERE `id_rental_org` = :id_rental_org 
-                AND `order_id`        = :order_id 
-                AND `product_id`      = :product_id 
-            ';
+        $sql = '
+            UPDATE `sub_orders` 
+            SET  
+                `order_id`      = :order_id, 
+                `product_id`    = :product_id,
+                `tariff_id`     = :tariff_id,
+                `accessories`   = :accessories, 
+                `bill_rent`     = :bill_rent,
+                `bill_access`   = :bill_access,
+                `sale`          = :sale,
+                `paid`          = :paid,
+                `pause_start`   = :pause_start,
+                `pause_time`    = :pause_time,
+                `end_time`      = :end_time,
+                `note`          = :note,
+                `status`        = :status 
+            WHERE
+                `id_rent` = :id_rent
+            AND
+                `id_rental_org` = :id_rental_org
+        ';
 
-            $d = array(
-                'id_rental_org' => $this->app_id,
-                'order_id'      => $order_id,
-                'product_id'    => $product_id
-            );
+        $d = array(
+            'order_id'      => $subOrder[order_id],
+            'product_id'    => $subOrder[product_id],
+            'tariff_id'     => $subOrder[tariff_id],
+            'accessories'   => $subOrder[accessories],
+            'bill_rent'     => $subOrder[bill_rent],
+            'bill_access'   => $subOrder[bill_access],
+            'sale'          => $subOrder[sale],
+            'paid'          => $subOrder[paid],
+            'pause_start'   => $subOrder[pause_start],
+            'pause_time'    => $subOrder[pause_time],
+            'end_time'      => $subOrder[end_time],
+            'note'          => $subOrder[note],
+            'status'        => $subOrder[status],
 
-            $result = $this->pDB->get($sql, 0, $d);
+            'id_rent'       => $subOrder[id_rent],
+            'id_rental_org' => $this->app_id
+        );
 
-            return $result[0][id];
-        };
+        
+        $result = $this->pDB->set($sql, $d);
 
-        $update = function ($id, $subOrder) {
+        $log = $result ? 'changeSubOrder: complete!' : 'changeSubOrder: failed!';
 
-            $sql = '
-                UPDATE `sub_orders` 
-                SET  
-                    `order_id`      = :order_id, 
-                    `product_id`    = :product_id,
-                    `tariff_id`     = :tariff_id,
-                    `accessories`   = :accessories, 
-                    `bill_rent`     = :bill_rent,
-                    `bill_access`   = :bill_access,
-                    `sale`          = :sale,
-                    `paid`          = :paid,
-                    `pause_start`   = :pause_start,
-                    `pause_time`    = :pause_time,
-                    `end_time`      = :end_time,
-                    `note`          = :note,
-                    `status`        = :status 
-                WHERE
-                    `id` = :id
-                AND
-                    `id_rental_org` = :id_rental_org
-            ';
+        $this->writeLog($log);
 
-            $d = array(
-                'id'            => $id,
-                'id_rental_org' => $this->app_id,
-                'order_id'      => $subOrder[order_id],
-                'product_id'    => $subOrder[product_id],
-                'tariff_id'     => $subOrder[tariff_id],
-                'accessories'   => $subOrder[accessories],
-                'bill_rent'     => $subOrder[bill_rent],
-                'bill_access'   => $subOrder[bill_access],
-                'sale'          => $subOrder[sale],
-                'paid'          => $subOrder[paid],
-                'pause_start'   => $subOrder[pause_start],
-                'pause_time'    => $subOrder[pause_time],
-                'end_time'      => $subOrder[end_time],
-                'note'          => $subOrder[note],
-                'status'        => $subOrder[status]
-            );
-
-            
-            $result = $this->pDB->set($sql, $d);
-
-            $log = $result ? 'changeSubOrder complete' : 'changeSubOrder failed';
-
-            $this->writeLog($log);
-
-            return $result;
-        };
-
-        $id = $search($subOrder[order_id], $subOrder[product_id]);
-
-
-        return $id ? $update($id, $subOrder) : $this->writeLog('changeSubOrder failed. Product not define in DB');
+        return $result;
     }
 
     private function deleteSubOrder($subOrder) 
