@@ -33,25 +33,6 @@ trait Customers
         * Если нет - записываем нового пользователя
         */
 
-        $checkID = function ($id) {
-            if (!$id) {
-                return null;
-            }
-
-            $sql = '
-                SELECT `id` 
-                FROM `customers` 
-                WHERE `id_rent` = :id_rent
-            ';
-
-            $d = array(
-                'id_rent' => $id
-            );
-            
-            $result = $this->pDB->get($sql, false, $d);
-            return $result[0][id];
-        };
-
         $update = function ($customer) {
             $sql = '
                 UPDATE `customers` 
@@ -134,7 +115,8 @@ trait Customers
                 `sale`,
                 `balance`,
                 `note`,
-                `updated`
+                `updated`,
+                `created`
 
             ) VALUES (
                 NULL, 
@@ -150,7 +132,8 @@ trait Customers
                 :sale,
                 :balance,
                 :note,
-                :updated
+                :updated,
+                :created
             )';
 
             $d = array(
@@ -166,7 +149,8 @@ trait Customers
                 'sale' =>           $customer[sale],
                 'balance' =>        $customer[balance],
                 'note' =>           $customer[note],
-                'updated' =>        date('Y-m-d H:i:s')
+                'updated' =>        date('Y-m-d H:i:s'),
+                'created' =>        date('Y-m-d H:i:s')
             );
 
             $result = $this->pDB->set($sql, $d);
@@ -180,14 +164,11 @@ trait Customers
             return $result;
         };
 
-        $id = $checkID($customer[id_rent]);
-
         if ($this->findIdRentIn('customers', $customer[id_rent])) {
             $update($customer);
         } else {
             $newCustomer($customer);
         }
-        //return $id ? $update($id, $customer) : $setCustomer($customer);
     }
 
     private function deleteCustomer($id)
