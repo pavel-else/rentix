@@ -188,16 +188,19 @@ trait Orders
             //Вернет true если в ордере есть активные товары или false иначе
             $sql = '
                 SELECT `id` 
-                FROM `sub_orders` 
+                FROM `orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `id_rent` = :id_rent
-                AND `status`   = :status
+                AND (
+                    `status`  = "ACTIVE"
+                    OR  
+                    `status`  = "PAUSE"
+                )
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'id_rent'      => $id_rent,
-                'status'        => 'ACTIVE',
+                'id_rent'       => $id_rent
             );
 
             $result = $this->pDB->get($sql, 0, $d);
