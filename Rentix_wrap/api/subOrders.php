@@ -162,32 +162,32 @@ trait SubOrders
         return $result;
     }
 
-    private function scanSubOrder($subOrder)
-    {
-        // Функция используется при добавлении и изменении сабордера
+    // private function scanSubOrder($subOrder)
+    // {
+    //     // Функция используется при добавлении и изменении сабордера
 
-        $log = [];
+    //     $log = [];
 
-        if (empty($subOrder)) {
-            $log[] = "empty product";
+    //     if (empty($subOrder)) {
+    //         $log[] = "empty product";
 
-            return $log; // все последующие не имеют смысла
-        }
+    //         return $log; // все последующие не имеют смысла
+    //     }
 
-        if (!$subOrder[order_id]) {
-            $log[] = "empty order_id";
-        }
+    //     if (!$subOrder[order_id]) {
+    //         $log[] = "empty order_id";
+    //     }
 
-        if (!$subOrder[product_id]) {
-            $log[] = "empty product_id";
-        }
+    //     if (!$subOrder[product_id]) {
+    //         $log[] = "empty product_id";
+    //     }
 
-        if (!$subOrder[tariff_id]) {
-            $log[] = "empty tariff_id";
-        }
+    //     if (!$subOrder[tariff_id]) {
+    //         $log[] = "empty tariff_id";
+    //     }
 
-        return $log ? $log : false;
-    }
+    //     return $log ? $log : false;
+    // }
 
     private function changeSubOrder($subOrder)
     {
