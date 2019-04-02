@@ -48,7 +48,7 @@ trait Orders
 
     private function newOrder($order)
     {
-        $newOrder = function ($order) {           
+        $newOrder = function ($order) {
 
             $sql = 'INSERT INTO `orders` (
                 `id`,
@@ -188,16 +188,19 @@ trait Orders
             //Вернет true если в ордере есть активные товары или false иначе
             $sql = '
                 SELECT `id` 
-                FROM `sub_orders` 
+                FROM `orders` 
                 WHERE `id_rental_org` = :id_rental_org 
                 AND `id_rent` = :id_rent
-                AND `status`   = :status
+                AND (
+                    `status`  = "ACTIVE"
+                    OR  
+                    `status`  = "PAUSE"
+                )
             ';
 
             $d = array(
                 'id_rental_org' => $this->app_id,
-                'id_rent'      => $id_rent,
-                'status'        => 'ACTIVE',
+                'id_rent'       => $id_rent
             );
 
             $result = $this->pDB->get($sql, 0, $d);
@@ -264,15 +267,20 @@ trait Orders
             return false;
         }
 
+        // Новый ордер
         $order = $data[order];
-        $oldSubOrder = $data[subOrder];
-        $newSubOrder = $data[subOrder];
-
-        $newSubOrder[order_id] = $order[id_rent];
-
         $this->newOrder($order);
+
+        // Удалаяем старый сабордер
+        $oldSubOrder = $data[subOrder];
         $this->deleteSubOrder($oldSubOrder);
+
+        // Добавляем новый сабордер
+        $newSubOrder = $data[subOrder];
+        $newSubOrder[order_id] = $this->getMaxIdRent('orders');
         $this->newSubOrder($newSubOrder);
+
+        // Удаляем старый ордер
         $this->deleteOrder($order[old_id]);
     }     
 
