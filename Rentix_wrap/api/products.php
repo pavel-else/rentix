@@ -2,7 +2,8 @@
 
 trait Products
 {
-    private function getProducts() {
+    private function getProducts()
+    {
         $sql = '
             SELECT * 
             FROM `products` 
@@ -24,8 +25,34 @@ trait Products
 
         return $result;
     }
-    
-    private function setProduct($product) {
+
+    private function getAllProducts() 
+    {
+        $sql = '
+            SELECT * 
+            FROM `products`
+            WHERE `id_rental_org` IN (
+                SELECT `id_rent`
+                FROM `rental_points`
+                WHERE `id_rental_org` = :id_rental_org
+            )
+        ';
+
+        $d = array (
+            'id_rental_org' => $this->org_id
+        );
+
+        $result = $this->pDB->get($sql, false, $d);
+
+        $log = $result ? "getAllProducts completed" : "getAllProducts failed";
+
+        $this->writeLog($log);
+
+        return $result;
+    }
+
+    private function setProduct($product)
+    {
 
         $checkID = function ($id_rent) {
             $sql = '
@@ -196,7 +223,8 @@ trait Products
         return $id ? $update($id, $product) : $newProduct($product);       
     }
 
-    private function deleteProduct($id_rent) {
+    private function deleteProduct($id_rent)
+    {
 
         $search = function ($id_rent) {
             $sql = '
@@ -244,7 +272,8 @@ trait Products
         return $result;       
     }
 
-    private function incMileage($value) {
+    private function incMileage($value)
+    {
         $mileage = !empty($value['mileage']) ? $value['mileage'] : NULL;
         $id_rent = !empty($value['product_id']) ? $value['product_id'] : NULL;
 

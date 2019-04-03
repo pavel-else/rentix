@@ -158,6 +158,10 @@ class Request
                 case 'incMileage':
                     $this->incMileage($value);
                 break;
+                // for middle level
+                case 'getAllProducts':
+                    $this->response['products'] = $this->getAllProducts();
+                break;
 
                 // Customers
                 case 'getCustomers':
