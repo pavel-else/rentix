@@ -2,13 +2,21 @@
 
 function getBill($app_id, $id_rent) {
     require_once('../libs/db.php');
-    $pDB = rent_connect_DB();
+    $pDB = new Pdo_Db();
+
+    $pDB->connect();
+
+    if (!$pDB->isConnected()){
+        echo "Ошибка подключения к БД";
+        die();
+    }
+    
 
     // Функция выбоки сабордера из БД
     $getSubOrder = function ($id_rent) use ($pDB, $app_id) {
         $sql = '
             SELECT * 
-            FROM `order_products` 
+            FROM `sub_orders` 
             WHERE `id_rental_org` = :id_rental_org 
             AND `id_rent` = :id_rent
         ';
@@ -30,17 +38,17 @@ function getBill($app_id, $id_rent) {
     };
 
     // Функция выбоки ордера из БД
-    $getOrder = function ($order_id) use ($pDB, $app_id) {
+    $getOrder = function ($orderId) use ($pDB, $app_id) {
         $sql = '
             SELECT * 
             FROM `orders` 
             WHERE `id_rental_org` = :id_rental_org 
-            AND `order_id` = :order_id
+            AND `id_rent` = :id_rent
         ';
 
         $d = array (
             'id_rental_org' => $app_id,
-            'order_id' => $order_id
+            'id_rent' => $orderId
         );
 
         $result = $pDB->get($sql, false, $d);
@@ -57,7 +65,7 @@ function getBill($app_id, $id_rent) {
     $getOptions = function () use ($pDB, $app_id) {
         $sql = '
             SELECT `id_rent`, `name`, `value`  
-            FROM `options` 
+            FROM `generall_settings` 
             WHERE `id_rental_org` = :id_rental_org
         ';
 
@@ -311,7 +319,6 @@ function getBill($app_id, $id_rent) {
         return $round > 1 ? round($bill / $round) * $round : round($bill);
     };
 
-
     $options = $getOptions();
 
     $subOrder = $getSubOrder($id_rent);
@@ -337,4 +344,4 @@ function getBill($app_id, $id_rent) {
     return $roundBill;
 }
 
-var_dump(getBill('8800000001', '323'));
+var_dump(getBill('8800000001', '211'));
