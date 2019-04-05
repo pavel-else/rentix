@@ -16,7 +16,7 @@ require_once ('./middle/products.php');
 // require_once ('./accessories.php');
 require_once ('./logs.php');
 // require_once ('./options.php');
-// require_once ('./categories.php');
+require_once ('./middle/categories.php');
 require_once ('./rentalPoints.php');
 // require_once ('./rentalPointInfo.php');
 // require_once ('./generalSettings.php');
@@ -34,7 +34,7 @@ class Request
     // use Accessoriess;    
     use Logs;    
     // use Options;    
-    // use Categories;
+    use Categories;
     use RentalPoints;
     // use RentalPointInfo;
     // use GeneralSettings;
@@ -178,10 +178,10 @@ class Request
                 //     $this->deleteTariff($value);
                 // break;
 
-                // // Categories
-                // case 'getCategories':
-                //     $this->response['categories'] = $this->getCategories();
-                // break;
+                // Categories
+                case 'getCategories':
+                    $this->response['categories'] = $this->getCategories();
+                break;
 
                 // // Accessories
                 // case 'getAccessories':

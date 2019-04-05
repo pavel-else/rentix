@@ -20,7 +20,7 @@ trait Products
 
         $result = $this->pDB->get($sql, false, $d);
 
-        $log = $result ? "getAllProducts completed" : "getAllProducts failed";
+        $log = $result ? "getProducts completed" : "getProducts failed";
 
         $this->writeLog($log);
 
