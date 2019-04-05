@@ -7,39 +7,39 @@ header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
 header('Access-Control-Allow-Credentials: true');
 
-require_once ('./auth.php');
-require_once ('./orders.php');
-require_once ('./subOrders.php');
-require_once ('./products.php');
-require_once ('./customers.php');
-require_once ('./tariffs.php');
-require_once ('./accessories.php');
+// require_once ('./auth.php');
+// require_once ('./orders.php');
+// require_once ('./subOrders.php');
+require_once ('./middle/products.php');
+// require_once ('./customers.php');
+// require_once ('./tariffs.php');
+// require_once ('./accessories.php');
 require_once ('./logs.php');
-require_once ('./options.php');
-require_once ('./categories.php');
+// require_once ('./options.php');
+// require_once ('./categories.php');
 require_once ('./rentalPoints.php');
-require_once ('./rentalPointInfo.php');
-require_once ('./generalSettings.php');
-require_once ('./repairs.php');
-require_once ('./repairTypes.php');
+// require_once ('./rentalPointInfo.php');
+// require_once ('./generalSettings.php');
+// require_once ('./repairs.php');
+// require_once ('./repairTypes.php');
 
 class Request    
 {
-    use Auth;    
-    use Orders;    
-    use SubOrders;    
+    // use Auth;    
+    // use Orders;    
+    // use SubOrders;    
     use Products;    
-    use Customers;    
-    use Tariffs;    
-    use Accessoriess;    
+    // use Customers;    
+    // use Tariffs;    
+    // use Accessoriess;    
     use Logs;    
-    use Options;    
-    use Categories;
+    // use Options;    
+    // use Categories;
     use RentalPoints;
-    use RentalPointInfo;
-    use GeneralSettings;
-    use Repairs;
-    use RepairTypes;
+    // use RentalPointInfo;
+    // use GeneralSettings;
+    // use Repairs;
+    // use RepairTypes;
 
     public $logs = [];
     private $response;
@@ -87,127 +87,120 @@ class Request
         $this->pDB = $this->rent_connect_DB();
         $switch = function ($cmd, $value) {
             switch ($cmd) {
-                case 'importCustomers':
-                    $this->importCustomers();
-                break;
 
-                // Auth
-                case 'login':
-                    $this->response['success']['token'] = 'asdfasdfa';//$this->login2($value);
-                break;
+                // // Auth
+                // case 'login':
+                //     $this->response['success']['token'] = 'asdfasdfa';//$this->login2($value);
+                // break;
 
-                // Orders
-                case 'getOrders':
-                    $this->response['orders'] = $this->getOrders();
-                break;
-                case 'getActiveOrders':
-                    $this->response['active_orders'] = $this->getActiveOrders();
-                break;
-                case 'newOrder':
-                    $this->newOrder($value);
-                break;
-                case 'changeOrder':
-                    $this->changeOrder($value);
-                break;
-                case 'deleteOrder':
-                    $this->deleteOrder($value);
-                break;
-                case 'splitOrder':
-                    $this->splitOrder($value);
-                break;
+                // // Orders
+                // case 'getOrders':
+                //     $this->response['orders'] = $this->getOrders();
+                // break;
+                // case 'getActiveOrders':
+                //     $this->response['active_orders'] = $this->getActiveOrders();
+                // break;
+                // case 'newOrder':
+                //     $this->newOrder($value);
+                // break;
+                // case 'changeOrder':
+                //     $this->changeOrder($value);
+                // break;
+                // case 'deleteOrder':
+                //     $this->deleteOrder($value);
+                // break;
+                // case 'splitOrder':
+                //     $this->splitOrder($value);
+                // break;
 
-                // SubOrders
-                case 'getSubOrders':
-                    $this->response['sub_orders'] = $this->getSubOrders();
-                break;
-                case 'getActiveSubOrders':
-                    $this->response['active_sub_orders'] = $this->getActiveSubOrders();
-                break;
-                case 'getHistory':
-                    $this->response['history'] = $this->getHistory($value);
-                break;
-                case 'newSubOrder':
-                    $this->newSubOrder($value);
-                break;
-                case 'changeOrderProduct': //Deprecated
-                    $this->changeSubOrder($value);
-                break;
-                case 'changeSubOrder':
-                    $this->changeSubOrder($value);
-                break;
-                case 'deleteOrderProduct':
-                    $this->deleteSubOrder($value);
-                break;
-                case 'stopOrder':
-                    $this->stopOrder($value);
-                break;
-                case 'abortSubOrder':
-                    $this->abortSubOrder($value);
-                break;
+                // // SubOrders
+                // case 'getSubOrders':
+                //     $this->response['sub_orders'] = $this->getSubOrders();
+                // break;
+                // case 'getActiveSubOrders':
+                //     $this->response['active_sub_orders'] = $this->getActiveSubOrders();
+                // break;
+                // case 'getHistory':
+                //     $this->response['history'] = $this->getHistory($value);
+                // break;
+                // case 'newSubOrder':
+                //     $this->newSubOrder($value);
+                // break;
+                // case 'changeOrderProduct': //Deprecated
+                //     $this->changeSubOrder($value);
+                // break;
+                // case 'changeSubOrder':
+                //     $this->changeSubOrder($value);
+                // break;
+                // case 'deleteOrderProduct':
+                //     $this->deleteSubOrder($value);
+                // break;
+                // case 'stopOrder':
+                //     $this->stopOrder($value);
+                // break;
+                // case 'abortSubOrder':
+                //     $this->abortSubOrder($value);
+                // break;
                 
                 // Products
                 case 'getProducts':
                     $this->response['products'] = $this->getProducts();
                 break;
-                case 'setProduct':
-                    $this->setProduct($value);
-                break;
-                case 'deleteProduct':
-                    $this->deleteProduct($value);
-                break;
-                case 'incMileage':
-                    $this->incMileage($value);
-                break;
-                // for middle level
-                case 'getAllProducts':
-                    $this->response['products'] = $this->getAllProducts();
-                break;
+                // case 'setProduct':
+                //     $this->setProduct($value);
+                // break;
+                // case 'deleteProduct':
+                //     $this->deleteProduct($value);
+                // break;
+                // case 'incMileage':
+                //     $this->incMileage($value);
+                // break;
 
-                // Customers
-                case 'getCustomers':
-                    $this->response['customers'] = $this->getCustomers();
-                break;
-                case 'setCustomer':
-                    $this->setCustomer($value);
-                break;
-                case 'deleteCustomer':
-                    $this->deleteCustomer($value);
-                break;
+                // // Customers
+                // case 'getCustomers':
+                //     $this->response['customers'] = $this->getCustomers();
+                // break;
+                // case 'setCustomer':
+                //     $this->setCustomer($value);
+                // break;
+                // case 'deleteCustomer':
+                //     $this->deleteCustomer($value);
+                // break;
                 
-                // Tarifs
-                case 'getTariffs':
-                    $this->response['tariffs'] = $this->getTariffs();
-                break;
-                case 'setTariff':
-                    $this->setTariff($value);
-                break;
-                case 'deleteTariff':
-                    $this->deleteTariff($value);
-                break;
+                // // Tarifs
+                // case 'getTariffs':
+                //     $this->response['tariffs'] = $this->getTariffs();
+                // break;
+                // case 'setTariff':
+                //     $this->setTariff($value);
+                // break;
+                // case 'deleteTariff':
+                //     $this->deleteTariff($value);
+                // break;
 
-                // Categories
-                case 'getCategories':
-                    $this->response['categories'] = $this->getCategories();
-                break;
+                // // Categories
+                // case 'getCategories':
+                //     $this->response['categories'] = $this->getCategories();
+                // break;
 
-                // Accessories
-                case 'getAccessories':
-                    $this->response['accessories'] = $this->getAccessories();
-                break;
-                case 'setAccessory':
-                    $this->setAccessory($value);
-                break;
-                case 'deleteAccessory':
-                    $this->deleteAccessory($value);
-                break;
+                // // Accessories
+                // case 'getAccessories':
+                //     $this->response['accessories'] = $this->getAccessories();
+                // break;
+                // case 'setAccessory':
+                //     $this->setAccessory($value);
+                // break;
+                // case 'deleteAccessory':
+                //     $this->deleteAccessory($value);
+                // break;
 
-                // Options
-                case 'getOptions':
-                    $this->response['options'] = $this->getOptions();
-                break;
-                case 'setOptions':
-                    $this->setOptions($value);
-                break;
+                // // Options
+                // case 'getOptions':
+                //     $this->response['options'] = $this->getOptions();
+                // break;
+                // case 'setOptions':
+                //     $this->setOptions($value);
+                // break;
 
                 // Logs
                 case 'getLogs':
@@ -221,36 +214,36 @@ class Request
                 case 'getRentalPoints':
                     $this->response['rental_points'] = $this->getRentalPoints();
                 break;
-                case 'getRentalPointInfo':
-                    $this->response['rental_point_info'] = $this->getRentalPointInfo();
-                break;
-                case 'setRentalPointInfo':
-                    $this->setRentalPointInfo($value);
-                break;
+                // case 'getRentalPointInfo':
+                //     $this->response['rental_point_info'] = $this->getRentalPointInfo();
+                // break;
+                // case 'setRentalPointInfo':
+                //     $this->setRentalPointInfo($value);
+                // break;
 
-                // GeneralSettings
-                case 'getGeneralSettings':
-                    $this->response['general_settings'] = $this->getGeneralSettings();
-                break;
-                case 'setGeneralSettings':
-                    $this->setGeneralSettings($value);
-                break;
+                // // GeneralSettings
+                // case 'getGeneralSettings':
+                //     $this->response['general_settings'] = $this->getGeneralSettings();
+                // break;
+                // case 'setGeneralSettings':
+                //     $this->setGeneralSettings($value);
+                // break;
 
-                // Repairs
-                case 'getRepairs':
-                    $this->response['repairs'] = $this->getRepairs();
-                break;
-                case 'setRepair':
-                    $this->setRepair($value);
-                break;
-                case 'stopRepair':
-                    $this->stopRepair($value);
-                break;
+                // // Repairs
+                // case 'getRepairs':
+                //     $this->response['repairs'] = $this->getRepairs();
+                // break;
+                // case 'setRepair':
+                //     $this->setRepair($value);
+                // break;
+                // case 'stopRepair':
+                //     $this->stopRepair($value);
+                // break;
 
-                // RepairTypes
-                case 'getRepairTypes' :
-                    $this->response['repair_types'] = $this->getRepairTypes();
-                break;
+                // // RepairTypes
+                // case 'getRepairTypes' :
+                //     $this->response['repair_types'] = $this->getRepairTypes();
+                // break;
 
                 // else
                 default:
