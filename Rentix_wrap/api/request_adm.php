@@ -185,6 +185,9 @@ class Request
                 case 'newCategory':
                     $this->newCategory($value);
                 break;
+                case 'deleteCategory':
+                    $this->deleteCategory($value);
+                break;
 
                 // // Accessories
                 // case 'getAccessories':
@@ -321,13 +324,13 @@ class Request
     * Общая функция поиска id_rent в указанной таблице
     * Возвращает чистый id в качестве бонуса
     */
-    private function findIdRent($tableName, $id_rent)
+    private function findIdRent($tableName, $id_rent, $appId)
     {
-        return $this->getIdRentIn($tableName, $is_rent);
+        return $this->getIdRentIn($tableName, $is_rent, $appId);
     }
 
     // Depricated!
-    private function findIdRentIn($tableName, $id_rent)
+    private function findIdRentIn($tableName, $id_rent, $appId)
     {
         $sql = "
             SELECT `id` 
@@ -337,7 +340,7 @@ class Request
         ";
 
         $d = array(
-            'id_rental_org' => $this->app_id,
+            'id_rental_org' => $appId,
             'id_rent'       => $id_rent
         );
 

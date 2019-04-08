@@ -73,4 +73,32 @@ trait Categories
 
         return $result;
     }
+    private function deleteCategory($value)
+    {
+        $idRent = $value[idRent];
+        $appId = $value[appId];
+
+        if (!$this->findIdRent('categories', $idRent, $appId)) {
+            $this->writeLog('deleteCategory is failed. id_rent not found', $idRent, $appId);
+        }
+
+        $sql = '
+            DELETE FROM `categories` 
+            WHERE `id_rent` = :id_rent
+            AND `id_rental_org` = :id_rental_org
+        ';
+
+        $d = array(
+            'id_rent' => $idRent,
+            'id_rental_org' => $appId
+        );
+
+        $result = $this->pDB->set($sql, $d);
+
+        $log = $result ? 'deleteCategory compleate' : 'deleteCategory failed';
+
+        $this->writeLog($log);
+
+        return $result;       
+    }
 }
