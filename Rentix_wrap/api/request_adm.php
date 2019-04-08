@@ -182,6 +182,9 @@ class Request
                 case 'getCategories':
                     $this->response['categories'] = $this->getCategories();
                 break;
+                case 'newCategory':
+                    $this->newCategory($value);
+                break;
 
                 // // Accessories
                 // case 'getAccessories':
@@ -347,13 +350,13 @@ class Request
     * Запрос БД на максимальный id_rent в таблице.
     * Возвращает увеличенный id_rent или 1 если  ничего не найдено
     */
-    private function getIdRent($tableName)
+    private function getIdRent($tableName, $appId)
     {
-        return $this->getIdRentIn($tableName);
+        return $this->getIdRentIn($tableName, $appId);
     }
 
     // Depricated!
-    private function getIdRentIn($tableName)
+    private function getIdRentIn($tableName, $appId)
     {
         $sql = "
             SELECT `id_rent` 
@@ -364,7 +367,7 @@ class Request
         ";
 
         $d = array(
-            'id_rental_org' => $this->app_id
+            'id_rental_org' => $appId
         );
 
         $result = $this->pDB->get($sql, 0, $d);
