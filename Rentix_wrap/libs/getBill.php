@@ -293,7 +293,7 @@ function getBill($app_id, $id_rent) {
             if ($type === '%') {
                 return $bill * ($value / 100);
             }
-            if ($type === 'р') {
+            if ($type === 'rub') {
                 return (int) $value;
             }
             return $type;
@@ -313,7 +313,7 @@ function getBill($app_id, $id_rent) {
         return ($bill / 100) * $percent;
     };
 
-    // Функция округления стоимости
+    // Функция округления стоимости, в опциях значение округления
     $toRoundBill = function ($bill, $options) {
         $round = $options['rent_round_bill'];
         return $round > 1 ? round($bill / $round) * $round : round($bill);
@@ -337,11 +337,15 @@ function getBill($app_id, $id_rent) {
 
     $billAccessories = $getBillAccessories($subOrder, $accessories, $bill);
 
-    $sale = $getSale($bill, $customer);
+    $sale = $getSale($bill + $billAccessories, $customer);
 
-    $roundBill = $toRoundBill($bill + $billAccessories - $sale, $options);
+    $roundBill              = $toRoundBill($bill, $options);
+    $roundBillAccessories   = $toRoundBill($billAccessories, $options);
+    $roundSale              = $toRoundBill($sale, $options);
 
-    return $roundBill;
+    $total = $roundBill + $roundBillAccessories - $roundSale;
+
+    return $total;
 }
 
-var_dump(getBill('8800000001', '211'));
+var_dump(getBill('8800000002', '185'));
