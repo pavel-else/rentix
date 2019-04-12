@@ -2,7 +2,8 @@
 
 trait Categories
 {
-    private function getCategories() {
+    private function getCategories()
+    {
         /*
         * Функция Выбирает категории из БД
         */
@@ -32,7 +33,8 @@ trait Categories
         return $this->pDB->get($sql, 0, $d);
     }
 
-    private function newCategory($value) {
+    private function newCategory($value)
+    {
         $name = $value[name];
         $appId = $value[appId];
 
@@ -44,6 +46,7 @@ trait Categories
             `id_rent`,
             `id_rental_org`,
             `name`,
+            `position`,
             `updated`,
             `created`
         ) VALUES (
@@ -51,6 +54,7 @@ trait Categories
             :id_rent,
             :id_rental_org,
             :name,
+            :position,
             :updated,
             :created
         )';
@@ -59,6 +63,7 @@ trait Categories
             'id_rent'       => $idRent,
             'id_rental_org' => $appId,
             'name'          => $name,
+            'position'      => 999,
             'updated'       => date("Y-m-d H:i:s"),
             'created'       => date("Y-m-d H:i:s")
         );
@@ -72,6 +77,45 @@ trait Categories
         $this->writeLog($log);
 
         return $result;
+    }
+    private function changeCategoriesTree($value)
+    {
+        $appId = $value[appId];
+        $categories = $value[categories];
+
+        $update = function ($category) use ($appId) {
+            $sql = '
+                UPDATE `categories` 
+                SET 
+                    `position`  = :position,
+                    `parent_id` = :parent_id
+
+                WHERE 
+                    `id_rent` = :id_rent
+                AND 
+                    `id_rental_org` = :id_rental_org
+            ';
+
+            $d = array (
+                'position'      => $category[position],
+                'parent_id'     => $category[parent_id],
+
+                'id_rent'       => $category[id_rent],
+                'id_rental_org' => $appId
+            );
+
+            $result = $this->pDB->set($sql, $d);
+
+            if (!$result) {
+                $this->writeLog("setCategories failed!");
+            }
+
+            return $result;
+        };
+
+        array_map(function ($i) use ($update) {
+            $update($i);
+        }, $categories);
     }
     private function deleteCategory($value)
     {
