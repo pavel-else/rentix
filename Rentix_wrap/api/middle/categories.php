@@ -117,6 +117,42 @@ trait Categories
             $update($i);
         }, $categories);
     }
+    private function updateCategory($value)
+    {
+        $appId = $value[appId];
+        $category = $value[category];
+
+        $sql = '
+            UPDATE `categories` 
+            SET 
+                `name`       = :name,
+                `icons_path` = :icons_path,
+                `updated`    = :updated 
+            WHERE 
+                `id_rent` = :id_rent
+            AND 
+                `id_rental_org` = :id_rental_org
+        ';
+
+        $d = array (
+            'name'           => $category[name],
+            'icons_path'     => $category[icons_path],
+            'updated'        => date("Y-m-d H:i:s"),
+
+            'id_rent'        => $category[id_rent],
+            'id_rental_org'  => $appId
+        );
+
+        $result = $this->pDB->set($sql, $d);
+
+        if ($result) {
+            $this->writeLog("updateCategory compleate!");
+        } else {
+            $this->writeLog("updateCategory failed!");
+        }
+
+        return $result;
+    }
     private function deleteCategory($value)
     {
         $idRent = $value[idRent];
