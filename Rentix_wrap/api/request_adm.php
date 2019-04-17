@@ -185,6 +185,9 @@ class Request
                 case 'newCategory':
                     $this->newCategory($value);
                 break;
+                case 'changeCategoriesTree':
+                    $this->changeCategoriesTree($value);
+                break;
                 case 'deleteCategory':
                     $this->deleteCategory($value);
                 break;
