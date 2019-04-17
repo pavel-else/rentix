@@ -146,9 +146,9 @@ class Request
                 case 'getProducts':
                     $this->response['products'] = $this->getProducts();
                 break;
-                // case 'setProduct':
-                //     $this->setProduct($value);
-                // break;
+                case 'updateProduct':
+                    $this->updateProduct($value);
+                break;
                 // case 'deleteProduct':
                 //     $this->deleteProduct($value);
                 // break;
@@ -187,6 +187,10 @@ class Request
                 break;
                 case 'changeCategoriesTree':
                     $this->changeCategoriesTree($value);
+                break;
+
+                case 'updateCategory':
+                    $this->updateCategory($value);
                 break;
                 case 'deleteCategory':
                     $this->deleteCategory($value);
