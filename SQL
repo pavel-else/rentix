@@ -1,6 +1,0 @@
-alter table `rental_points` add `short_description` varchar(255);
-Update `rental_points` set `short_description` = '', `description` = '';
-alter table `rental_points` CHANGE COLUMN `short_description` `description_short` varchar(255);
-
-update `orders` set `status` = 'ACTIVE' WHERE `order_id` = 1920 and `id_rental_org` = 8800000001;
-update `order_products` set `status` = 'ACTIVE' WHERE `order_id` = 1920 and `id_rental_org` = 8800000001;
