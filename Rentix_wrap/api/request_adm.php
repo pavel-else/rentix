@@ -12,7 +12,7 @@ header('Access-Control-Allow-Credentials: true');
 // require_once ('./subOrders.php');
 require_once ('./middle/products.php');
 // require_once ('./customers.php');
-// require_once ('./tariffs.php');
+require_once ('./middle/tariffs.php');
 // require_once ('./accessories.php');
 require_once ('./logs.php');
 // require_once ('./options.php');
@@ -30,7 +30,7 @@ class Request
     // use SubOrders;    
     use Products;    
     // use Customers;    
-    // use Tariffs;    
+    use Tariffs;    
     // use Accessoriess;    
     use Logs;    
     // use Options;    
@@ -167,10 +167,10 @@ class Request
                 //     $this->deleteCustomer($value);
                 // break;
                 
-                // // Tarifs
-                // case 'getTariffs':
-                //     $this->response['tariffs'] = $this->getTariffs();
-                // break;
+                // Tarifs
+                case 'getTariffs':
+                    $this->response['tariffs'] = $this->getTariffs();
+                break;
                 // case 'setTariff':
                 //     $this->setTariff($value);
                 // break;

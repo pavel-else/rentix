@@ -117,7 +117,6 @@ trait Categories
             $update($i);
         }, $categories);
     }
-
     private function updateCategory($value)
     {
         $appId = $value[appId];
@@ -154,7 +153,6 @@ trait Categories
 
         return $result;
     }
-
     private function deleteCategory($value)
     {
         $idRent = $value[idRent];
