@@ -149,9 +149,9 @@ class Request
                 case 'updateProduct':
                     $this->updateProduct($value);
                 break;
-                // case 'deleteProduct':
-                //     $this->deleteProduct($value);
-                // break;
+                case 'deleteProduct':
+                    $this->deleteProduct($value);
+                break;
                 // case 'incMileage':
                 //     $this->incMileage($value);
                 // break;
