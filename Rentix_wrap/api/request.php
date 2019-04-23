@@ -7,20 +7,20 @@ header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: true');
 
-require_once ('./auth.php');
-require_once ('./orders.php');
-require_once ('./subOrders.php');
-require_once ('./products.php');
-require_once ('./customers.php');
-require_once ('./tariffs.php');
-require_once ('./accessories.php');
-require_once ('./logs.php');
-require_once ('./options.php');
-require_once ('./categories.php');
-require_once ('./rentalPointInfo.php');
-require_once ('./generalSettings.php');
-require_once ('./repairs.php');
-require_once ('./repairTypes.php');
+require_once ('./base/logs.php');
+
+require_once ('./low/products.php');
+require_once ('./low/categories.php');
+require_once ('./low/customers.php');
+require_once ('./low/subOrders.php');
+require_once ('./low/orders.php');
+require_once ('./low/accessories.php');
+require_once ('./low/auth.php');
+require_once ('./low/tariffs.php');
+require_once ('./low/rentalPointInfo.php');
+require_once ('./low/generalSettings.php');
+require_once ('./low/repairs.php');
+require_once ('./low/repairTypes.php');
 
 class Request    
 {
@@ -31,8 +31,7 @@ class Request
     use Customers;    
     use Tariffs;    
     use Accessoriess;    
-    use Logs;    
-    use Options;    
+    use Logs;       
     use Categories;
     use RentalPointInfo;
     use GeneralSettings;
@@ -191,14 +190,6 @@ class Request
                 break;
                 case 'deleteAccessory':
                     $this->deleteAccessory($value);
-                break;
-
-                // Options
-                case 'getOptions':
-                    $this->response['options'] = $this->getOptions();
-                break;
-                case 'setOptions':
-                    $this->setOptions($value);
                 break;
 
                 // Logs
