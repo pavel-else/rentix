@@ -24,31 +24,6 @@ trait Products
         return $result;
     }
 
-    // private function getAllProducts() 
-    // {
-    //     $sql = '
-    //         SELECT * 
-    //         FROM `products`
-    //         WHERE `id_rental_org` IN (
-    //             SELECT `id_rent`
-    //             FROM `rental_points`
-    //             WHERE `id_rental_org` = :id_rental_org
-    //         )
-    //     ';
-
-    //     $d = array (
-    //         'id_rental_org' => $this->org_id
-    //     );
-
-    //     $result = $this->pDB->get($sql, false, $d);
-
-    //     $log = $result ? "getAllProducts completed" : "getAllProducts failed";
-
-    //     $this->writeLog($log);
-
-    //     return $result;
-    // }
-
     private function setProduct($product)
     {
 
@@ -225,55 +200,85 @@ trait Products
 
         return $id ? $update($id, $product) : $newProduct($product);       
     }
-
-    private function deleteProduct($id_rent)
+    private function deleteProduct($productId)
     {
+        $sql = '
+            UPDATE `products` 
+            SET 
+                `status`        = :status,
+                `updated`       = :updated
+            WHERE 
+                `id_rent`       = :id_rent
+            AND
+                `id_rental_org` = :id_rental_org
+        ';
 
-        $search = function ($id_rent) {
-            $sql = '
-                SELECT `id` 
-                FROM `products` 
-                WHERE `id_rental_org` = :id_rental_org 
-                AND `id_rent` = :id_rent
-            ';
+        $d = array(
+            'status'        => 'deleted',
+            'updated'       => date("Y-m-d H:i:s"),
 
-            $d = array(
-                'id_rental_org' => $this->app_id,
-                'id_rent' => $id_rent
-            );
+            'id_rent'       => $productId,
+            'id_rental_org' => $this->app_id,
+        );
+        
+        $result = $this->pDB->set($sql, $d);
 
-            $result = $this->pDB->get($sql, 0, $d);
-
-            return $result[0][id];
-        };
-
-        $delete = function ($id) {
-            $sql = '
-                DELETE FROM `products` 
-                WHERE `id` = :id
-            ';
-
-            $d = array(
-                'id' => $id
-            );
-
-            return $this->pDB->set($sql, $d);
-        };
-
-        if (empty($id_rent)) {
-            return false;
-        }
-
-        $result = $delete($search($id_rent));    
-           
         if ($result) {
             $this->writeLog("deleteProduct completed.");
         } else {
-            $this->writeLog("deleteProduct failed.");
+            $this->writeLog("deleteProduct failed.", json_encode($value));
         }
 
-        return $result;       
+        return $result; 
     }
+    // private function deleteProduct($id_rent)
+    // {
+
+    //     $search = function ($id_rent) {
+    //         $sql = '
+    //             SELECT `id` 
+    //             FROM `products` 
+    //             WHERE `id_rental_org` = :id_rental_org 
+    //             AND `id_rent` = :id_rent
+    //         ';
+
+    //         $d = array(
+    //             'id_rental_org' => $this->app_id,
+    //             'id_rent' => $id_rent
+    //         );
+
+    //         $result = $this->pDB->get($sql, 0, $d);
+
+    //         return $result[0][id];
+    //     };
+
+    //     $delete = function ($id) {
+    //         $sql = '
+    //             DELETE FROM `products` 
+    //             WHERE `id` = :id
+    //         ';
+
+    //         $d = array(
+    //             'id' => $id
+    //         );
+
+    //         return $this->pDB->set($sql, $d);
+    //     };
+
+    //     if (empty($id_rent)) {
+    //         return false;
+    //     }
+
+    //     $result = $delete($search($id_rent));    
+           
+    //     if ($result) {
+    //         $this->writeLog("deleteProduct completed.");
+    //     } else {
+    //         $this->writeLog("deleteProduct failed.");
+    //     }
+
+    //     return $result;       
+    // }
 
     private function incMileage($value)
     {

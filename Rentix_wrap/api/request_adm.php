@@ -7,6 +7,7 @@ header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
 header('Access-Control-Allow-Credentials: true');
 
+require_once ('./base/logs.php');
 // require_once ('./auth.php');
 // require_once ('./orders.php');
 // require_once ('./subOrders.php');
@@ -14,7 +15,6 @@ require_once ('./middle/products.php');
 // require_once ('./customers.php');
 require_once ('./middle/tariffs.php');
 // require_once ('./accessories.php');
-require_once ('./base/logs.php');
 // require_once ('./options.php');
 require_once ('./middle/categories.php');
 require_once ('./middle/rentalPoints.php');
