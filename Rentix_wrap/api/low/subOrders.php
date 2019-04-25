@@ -136,7 +136,7 @@ trait SubOrders
             // поэтому, если мы решили отказаться от присвоения id_rent ордеру на стороне клиента,
             // можно просто найти максимальный id_rent среди ордеров
             // но это так себе вариант, если честно
-            'order_id'      => $this->getMaxIdRent('orders'),
+            'order_id'      => $subOrder[order_id] ? $subOrder[order_id] : $this->getMaxIdRent('orders'),
             'id_rental_org' => $this->app_id,
             'product_id'    => $subOrder[product_id],
             'tariff_id'     => $subOrder[tariff_id],
