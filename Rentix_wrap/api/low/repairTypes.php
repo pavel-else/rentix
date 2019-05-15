@@ -38,172 +38,138 @@ trait repairTypes
     //     return $id ? $this->updateRepairType($repairType) : $this->newRepairType($repairType);       
     // }
 
+    private function setRepairType($type) {
+        if (!isset($type[id_rent])) {
+            $this->newRepairType($type);
+        } else {
+            $this->updateRepairType($type);
+        }  
+    }
 
-    // // For make
-    // private function newRepairType($repairType)
-    // {
-    //     $sql = '
-    //         INSERT INTO `repairs` (
-    //         `id`,
-    //         `id_rent`,
-    //         `id_rental_org`,
-    //         `product_id`, 
-    //         `is_plan`, 
-    //         `start_time`, 
-    //         `mileage`, 
-    //         `types_fix`, 
-    //         `cost_comp`, 
-    //         `cost_repair`, 
-    //         `note`, 
-    //         `end_time`, 
-    //         `updated` 
-    //     ) VALUES (
-    //         NULL,
-    //         :id_rent,
-    //         :id_rental_org,
-    //         :product_id, 
-    //         :is_plan, 
-    //         :start_time, 
-    //         :mileage, 
-    //         :types_fix, 
-    //         :cost_comp, 
-    //         :cost_repair, 
-    //         :note, 
-    //         :end_time, 
-    //         :updated
-    //     )';
+    private function newRepairType($type)
+    {
+        $sql = '
+            INSERT INTO `repair_types` (
+            `id`,
+            `id_rent`,
+            `id_rental_org`,
+            `is_plan`,  
+            `name`,
+            `period`,
+            `note`,
+            `status`,
+            `updated`,
+            `created`
+        ) VALUES (
+            NULL,
+            :id_rent,
+            :id_rental_org,
+            :is_plan, 
+            :name, 
+            :period, 
+            :note,
+            :status,
+            :updated,
+            :created
+        )';
 
-    //     $d = array(
-    //         'id_rent' => $this->getIdRentIn('repairs'),
-    //         'id_rental_org' => $this->app_id,
-    //         'product_id' => $repair['product_id'], 
-    //         'is_plan' => $repair['is_plan'], 
-    //         'start_time' => $repair['start_time'], 
-    //         'mileage' => $repair['mileage'], 
-    //         'types_fix' => $repair['types_fix'], 
-    //         'cost_comp' => $repair['cost_comp'], 
-    //         'cost_repair' => $repair['cost_repair'], 
-    //         'note' => $repair['note'], 
-    //         'end_time' => $repair['end_time'],
-    //         'updated' => date("Y-m-d H:i:s"),
-    //     );
+        $d = array(
+            'id_rent'       => $this->getIdRent('repair_types'),
+            'id_rental_org' => $this->app_id, 
+            'is_plan'       => $type[is_plan] ? $type[is_plan] : 0,
+            'name'          => $type[name],
+            'period'        => $type[period] ? $type[period] : 0,
+            'note'          => $type[note],
+            'status'        => 'active',
+            'updated'       => date("Y-m-d H:i:s"),
+            'created'       => date("Y-m-d H:i:s"),
+        );
         
-    //     $result = $this->pDB->set($sql, $d);
+        $result = $this->pDB->set($sql, $d);
 
-    //     $log = $result ? 
-    //         'new Repair: successfully completed!':
-    //         'new Repair: failed!';            
+        $log = $result ? 
+            'new RepairType: completed!':
+            'new RepairType: failed!';            
 
-    //     $this->writeLog($log);
+        $this->writeLog($log);
 
-    //     if ($result) {
-    //         // Убрать велосипед из списка Активных
-    //         $this->updateProductStatus($repair['product_id'], 'off');
-    //     }
+        return $result;
+    }
 
-    //     return $result;
-    // }
-
-    // // For make
-    // private function updateRepair($repair)
-    // {
-    //     // Функция по id обновляет соотв. запись в таблице
+    private function updateRepairType($type) {
         
-    //     $sql = '
-    //         UPDATE `repairs` 
-    //         SET 
-    //             `product_id` = :product_id,
-    //             `is_plan` = :is_plan, 
-    //             `start_time` = :start_time, 
-    //             `mileage` = :mileage, 
-    //             `types_fix` = :types_fix, 
-    //             `cost_comp` = :cost_comp, 
-    //             `cost_repair` = :cost_repair, 
-    //             `note` = :note, 
-    //             `end_time` = :end_time, 
-    //             `updated` = :updated 
-    //         WHERE 
-    //             `id_rent` = :id_rent
-    //         AND 
-    //             `id_rental_org` = :id_rental_org
-    //     ';
+        $sql = '
+            UPDATE `repair_types` 
+            SET 
+                `is_plan` = :is_plan,
+                `name`    = :name, 
+                `period`  = :period, 
+                `note`    = :note, 
+                `updated` = :updated
+            WHERE 
+                `id_rent` = :id_rent
+            AND 
+                `id_rental_org` = :id_rental_org
+        ';
 
-    //     $d = array(
-    //         'id_rent' => $repair['id_rent'],
-    //         'id_rental_org' => $this->app_id,
-    //         'product_id' => $repair['product_id'], 
-    //         'is_plan' => $repair['is_plan'], 
-    //         'start_time' => $repair['start_time'], 
-    //         'mileage' => $repair['mileage'], 
-    //         'types_fix' => $repair['types_fix'], 
-    //         'cost_comp' => $repair['cost_comp'], 
-    //         'cost_repair' => $repair['cost_repair'], 
-    //         'note' => $repair['note'], 
-    //         'end_time' => $repair['end_time'], 
-    //         'updated' => date("Y-m-d H:i:s")
-    //     );
+        $d = array( 
+            'is_plan' => $type[is_plan] ? $type[is_plan] : 0, 
+            'name'    => $type[name], 
+            'period'  => $type[period] ? $type[period] : 0, 
+            'note'    => $type[note],  
+            'updated' => date("Y-m-d H:i:s"),
 
-    //     $result = $this->pDB->set($sql, $d);
+            'id_rent' => $type[id_rent],
+            'id_rental_org' => $this->app_id,
+        );
 
-    //     if ($result) {
-    //         $this->writeLog("updateRepair is completed.");
-    //     } else {
-    //         $this->writeLog("updateRepair is failed.");
-    //     }
+        $result = $this->pDB->set($sql, $d);
 
-    //     return $result;
-    // }
+        $log = $result ? 
+            'update RepairType: completed!':
+            'update RepairType: failed!';            
 
-    // private function stopRepair($repair) {
-    //     $stop = $repair['end_time_timestamp'];
-    //     $end_time = date('Y-m-d H:i:s', $stop / 1000);
-    //     $repair['end_time'] = $end_time;
+        $this->writeLog($log);
 
-    //     //$this->writeLog('stop', date('Y-m-d H:i:s', $stop / 1000));
+        return $result;
+    }
 
-    //     $isUpdatedRepair = $this->updateRepair($repair);
+    private function deleteRepairType($typeId) {
+        $id = $this->findIdRent('repair_types', $typeId);
 
-    //     if ($isUpdatedRepair) {
-    //         $isUpdatedProduct = $this->updateProductStatus($repair['product_id'], 'active');
-    //     }
+        if (!$id) {
+            $this->writeLog('delete RepairType failed! Don`t finded id_rent.');
 
-    //     if ($isUpdatedProduct && $isUpdatedRepair) {
-    //         $this->writeLog("stopRepair is completed.");
-    //     } else {
-    //         $this->writeLog("stopRepair is failed.");
-    //     }
+            return false;
+        }
 
-    //     return $result;      
-    // }
+        $sql = '
+            UPDATE `repair_types` 
+            SET 
+                `status`  = :status,
+                `updated` = :updated
+            WHERE 
+                `id_rent` = :id_rent
+            AND 
+                `id_rental_org` = :id_rental_org
+        ';
 
-    // private function updateProductStatus($id_rent, $status)
-    // {
+        $d = array( 
+            'status'  => 'deleted',  
+            'updated' => date("Y-m-d H:i:s"),
 
-    //     $this->writeLog('updateProductStatus', 'id_rent=', $id_rent, 'status=', $status);
-    //     $sql = '
-    //         UPDATE `products` 
-    //         SET 
-    //             `status` = :status
-    //         WHERE 
-    //             `id_rent` = :id_rent
-    //         AND 
-    //             `id_rental_org` = :id_rental_org
-    //     ';
+            'id_rent' => $typeId,
+            'id_rental_org' => $this->app_id,
+        );
 
-    //     $d = array(
-    //         'id_rent' => $id_rent,
-    //         'id_rental_org' => $this->app_id,
-    //         'status' => $status
-    //     );
+        $result = $this->pDB->set($sql, $d);
 
-    //     $result = $this->pDB->set($sql, $d);
+        $log = $result ? 
+            'delete RepairType: completed!':
+            'delete RepairType: failed!';            
 
-    //     if ($result) {
-    //         $this->writeLog("updateProductStatus completed.");
-    //     } else {
-    //         $this->writeLog("updateProductStatus failed.");
-    //     }
+        $this->writeLog($log);
 
-    //     return $result;     
-    // }
+        return $result;
+    }
 }

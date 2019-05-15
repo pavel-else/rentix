@@ -231,6 +231,12 @@ class Request
                 case 'getRepairTypes' :
                     $this->response['repair_types'] = $this->getRepairTypes();
                 break;
+                case 'setRepairType':
+                    $this->setRepairType($value);
+                break;
+                case 'deleteRepairType':
+                    $this->deleteRepairType($value);
+                break;
 
                 // else
                 default:
