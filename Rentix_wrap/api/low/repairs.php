@@ -5,9 +5,9 @@ trait Repairs
     private function getRepairs()
     {
         $sql = '
-            SELECT * 
-            FROM `repairs` 
-            WHERE `id_rental_org` = :id_rental_org 
+            SELECT *
+            FROM `repairs`
+            WHERE `id_rental_org` = :id_rental_org
         ';
 
         $d = array (
@@ -15,17 +15,17 @@ trait Repairs
         );
 
         $result = $this->pDB->get($sql, false, $d);
-        
+
         $log = $result ? "getRepairs is completed" : "getRepairs is failed";
 
         return $result;
     }
-    
+
     /*
     * Функция - обертка
     * Проверяет id ремонта и вызывает соответсвующую функцию
     */
-    private function setRepair($repair) 
+    private function setRepair($repair)
     {
         $id = $this->findIdRentIn('repairs', $repair['id_rent']);
 
@@ -35,7 +35,7 @@ trait Repairs
             $this->writeLog('Repairs: id_rent is found. Make update this repair', 'id_rent = ', $id);
         }
 
-        return $id ? $this->updateRepair($repair) : $this->newRepair($repair);       
+        return $id ? $this->updateRepair($repair) : $this->newRepair($repair);
     }
 
     private function newRepair($repair)
@@ -45,49 +45,55 @@ trait Repairs
             `id`,
             `id_rent`,
             `id_rental_org`,
-            `product_id`, 
-            `start_time`, 
-            `mileage`, 
-            `repair_type`, 
-            `cost_comp`, 
-            `cost_work`, 
-            `note`, 
-            `end_time`, 
-            `updated` 
+            `product_id`,
+            `mileage`,
+            `repair_type`,
+            `cost_comp`,
+            `cost_work`,
+            `note`,
+            `status`,
+            `start_time`,
+            `end_time`,
+            `updated`,
+            `created`
         ) VALUES (
             NULL,
             :id_rent,
             :id_rental_org,
-            :product_id, 
-            :start_time, 
-            :mileage, 
-            :repair_type, 
-            :cost_comp, 
-            :cost_work, 
-            :note, 
-            :end_time, 
-            :updated
+            :product_id,
+            :mileage,
+            :repair_type,
+            :cost_comp,
+            :cost_work,
+            :note,
+            :status,
+            :start_time,
+            :end_time,
+            :updated,
+            :created
         )';
 
         $d = array(
-            'id_rent' => $this->getIdRentIn('repairs'),
+            'id_rent'       => $this->getIdRentIn('repairs'),
             'id_rental_org' => $this->app_id,
-            'product_id' => $repair['product_id'], 
-            'start_time' => $repair['start_time'], 
-            'mileage' => 0, 
-            'repair_type' => $repair['repair_type'], 
-            'cost_comp' => $repair['cost_comp'], 
-            'cost_work' => $repair['cost_work'], 
-            'note' => $repair['note'], 
-            'end_time' => $repair['end_time'],
-            'updated' => date("Y-m-d H:i:s"),
+            'product_id'    => $repair['product_id'],
+            'mileage'       => 0,
+            'repair_type'   => $repair['repair_type'],
+            'cost_comp'     => $repair['cost_comp'],
+            'cost_work'     => $repair['cost_work'],
+            'note'          => $repair['note'],
+            'status'        => $repair['status'],
+            'start_time'    => $repair['start_time'],
+            'end_time'      => $repair['end_time'],
+            'updated'       => date("Y-m-d H:i:s"),
+            'created'       => date("Y-m-d H:i:s"),
         );
-        
+
         $result = $this->pDB->set($sql, $d);
 
-        $log = $result ? 
+        $log = $result ?
             'new Repair: successfully completed!':
-            'new Repair: failed!';            
+            'new Repair: failed!';
 
         $this->writeLog($log);
 
@@ -101,38 +107,38 @@ trait Repairs
 
     private function updateRepair($repair)
     {
-        // Функция по id обновляет соотв. запись в таблице
-        
         $sql = '
-            UPDATE `repairs` 
-            SET 
-                `product_id` = :product_id,
-                `start_time` = :start_time, 
-                `mileage` = :mileage, 
-                `repair_type` = :repair_type, 
-                `cost_comp` = :cost_comp, 
-                `cost_work` = :cost_work, 
-                `note` = :note, 
-                `end_time` = :end_time, 
-                `updated` = :updated 
-            WHERE 
+            UPDATE `repairs`
+            SET
+                `product_id`  = :product_id,
+                `mileage`     = :mileage,
+                `repair_type` = :repair_type,
+                `cost_comp`   = :cost_comp,
+                `cost_work`   = :cost_work,
+                `note`        = :note,
+                `status`      = :status,
+                `start_time`  = :start_time,
+                `end_time`    = :end_time,
+                `updated`     = :updated
+            WHERE
                 `id_rent` = :id_rent
-            AND 
+            AND
                 `id_rental_org` = :id_rental_org
         ';
 
         $d = array(
-            'id_rent' => $repair['id_rent'],
+            'id_rent'       => $repair['id_rent'],
             'id_rental_org' => $this->app_id,
-            'product_id' => $repair['product_id'], 
-            'start_time' => $repair['start_time'], 
-            'mileage' => $repair['mileage'], 
-            'repair_type' => $repair['repair_type'], 
-            'cost_comp' => $repair['cost_comp'], 
-            'cost_work' => $repair['cost_work'], 
-            'note' => $repair['note'], 
-            'end_time' => $repair['end_time'], 
-            'updated' => date("Y-m-d H:i:s")
+            'product_id'    => $repair['product_id'],
+            'mileage'       => $repair['mileage'],
+            'repair_type'   => $repair['repair_type'],
+            'cost_comp'     => $repair['cost_comp'],
+            'cost_work'     => $repair['cost_work'],
+            'note'          => $repair['note'],
+            'status'        => $repair['status'],
+            'start_time'    => $repair['start_time'],
+            'end_time'      => $repair['end_time'],
+            'updated'       => date("Y-m-d H:i:s")
         );
 
         $result = $this->pDB->set($sql, $d);
@@ -159,7 +165,7 @@ trait Repairs
             $this->writeLog("stopRepair is failed.");
         }
 
-        return $result;      
+        return $result;
     }
 
     private function updateProductStatus($id_rent, $status)
@@ -167,12 +173,12 @@ trait Repairs
 
         $this->writeLog('updateProductStatus', 'id_rent=', $id_rent, 'status=', $status);
         $sql = '
-            UPDATE `products` 
-            SET 
+            UPDATE `products`
+            SET
                 `status` = :status
-            WHERE 
+            WHERE
                 `id_rent` = :id_rent
-            AND 
+            AND
                 `id_rental_org` = :id_rental_org
         ';
 
@@ -190,6 +196,6 @@ trait Repairs
             $this->writeLog("updateProductStatus failed.");
         }
 
-        return $result;     
+        return $result;
     }
 }
